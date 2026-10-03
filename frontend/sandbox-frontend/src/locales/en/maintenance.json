@@ -1,0 +1,9 @@
+{
+  "maintenance": {
+    "contact": "Contact",
+    "heading": "Under maintenance",
+    "message": "The system is currently under maintenance. We apologize for the inconvenience.",
+    "scheduledEnd": "Expected to finish",
+    "scheduledEndNotSet": "To be determined"
+  }
+}
