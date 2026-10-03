@@ -4,6 +4,7 @@ generator client {
   // NestJS は CommonJS ビルドのため cjs を明示する
   moduleFormat = "cjs"
   runtime      = "nodejs"
+  importFileExtension = ""
 }
 
 datasource db {
