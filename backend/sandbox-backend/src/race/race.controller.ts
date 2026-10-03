@@ -22,6 +22,7 @@ import { OperatorId } from '../auth/decorators/operator-id.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { ConditionalAuthGuard } from '../auth/guards/conditional-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
+import { StrictThrottle } from '../common/decorators/strict-throttle.decorator';
 import { CreateRaceDto } from './dto/create-race.dto';
 import { UpdateRaceDto } from './dto/update-race.dto';
 import { RaceService } from './race.service';
@@ -48,6 +49,7 @@ export class RaceController {
     return this.raceService.findOne(id);
   }
 
+  @StrictThrottle()
   @Post()
   @Roles('admin', 'operator')
   @ApiOperation({ summary: 'レース作成' })
