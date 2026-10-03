@@ -1,0 +1,9 @@
+{
+  "error": {
+    "heading": "An error occurred",
+    "message": "Please try again later.",
+    "retry": "Retry",
+    "backToHome": "Back to home",
+    "stackTrace": "Stack trace"
+  }
+}
