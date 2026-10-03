@@ -3,9 +3,18 @@
   "enabled": true,
   "roles": {
     "realm": [
-      { "name": "admin", "description": "全操作が可能" },
-      { "name": "operator", "description": "レースの作成・更新が可能" },
-      { "name": "viewer", "description": "閲覧のみ" }
+      {
+        "name": "admin",
+        "description": "全操作が可能"
+      },
+      {
+        "name": "operator",
+        "description": "レースの作成・更新が可能"
+      },
+      {
+        "name": "viewer",
+        "description": "閲覧のみ"
+      }
     ]
   },
   "clients": [
@@ -18,8 +27,12 @@
       "attributes": {
         "pkce.code.challenge.method": "S256"
       },
-      "redirectUris": ["http://localhost:5173/*"],
-      "webOrigins": ["http://localhost:5173"]
+      "redirectUris": [
+        "http://localhost:5173/*"
+      ],
+      "webOrigins": [
+        "http://localhost:5173"
+      ]
     }
   ],
   "users": [
@@ -30,9 +43,16 @@
       "lastName": "User",
       "enabled": true,
       "credentials": [
-        { "type": "password", "value": "password", "temporary": false }
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
       ],
-      "realmRoles": ["admin"]
+      "realmRoles": [
+        "default-roles-sandbox",
+        "admin"
+      ]
     }
   ]
 }
