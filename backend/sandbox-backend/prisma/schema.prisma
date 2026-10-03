@@ -10,32 +10,106 @@ datasource db {
   provider = "postgresql"
 }
 
+/// ユーザ
+model User {
+  /// ユーザID
+  id           String     @id @default(uuid()) @db.Uuid
+  /// 外部ID
+  externalId   String     @unique // IdP の sub（Keycloak なら UUID）
+  /// プロバイダ
+  provider     String     @default("keycloak") // IdP 識別子
+  /// メールアドレス
+  email        String?
+  /// 氏名
+  name         String?
+  roles        UserRole[]
+  racesCreated Race[]     @relation("RaceCreatedBy")
+  racesUpdated Race[]     @relation("RaceUpdatedBy")
+  /// 登録日時
+  createdAt    DateTime   @default(now()) @db.Timestamptz(3)
+  /// 更新日時
+  updatedAt    DateTime   @updatedAt @db.Timestamptz(3)
+
+  @@map("users")
+}
+
+/// ユーザロール
+model UserRole {
+  /// ユーザID
+  userId String @db.Uuid
+  /// ロール
+  role   String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, role])
+  @@map("user_roles")
+}
+
+/// レース
 model Race {
+  /// レースID
   id        String   @id @default(uuid()) @db.Uuid // レースID
+  /// 開催日時
   date      DateTime @db.Timestamptz(3) // 開催日（UTCで保存）
+  /// レース名
   name      String // レース名
+  /// 競馬場
   venue     String // 競馬場
+  /// 楽観ロックバージョン
   version   Int      @default(0) // 楽観ロック用バージョン
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  /// 登録日時
+  createdAt DateTime @default(now()) @db.Timestamptz(3) // 登録時刻
+  /// 登録者
+  createdBy String   @db.Uuid // 登録ユーザー（users.id）
+  /// 更新日時
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) // 最終更新時刻
+  /// 更新者
+  updatedBy String   @db.Uuid // 最終更新ユーザー（users.id）
   entries   Entry[] // 出走馬（1対多リレーション）
+  creator   User     @relation("RaceCreatedBy", fields: [createdBy], references: [id])
+  updater   User     @relation("RaceUpdatedBy", fields: [updatedBy], references: [id])
 
   @@unique([date, name, venue]) // 同一日・同名・同会場のレース重複を防ぐ
   @@map("races")
 }
 
+/// 出走馬
 model Entry {
+  /// 出走馬ID
   id          String   @id @default(uuid()) @db.Uuid // 出走馬ID
+  /// レースID
   raceId      String   @db.Uuid // レースID（外部キー）
+  /// 枠番
   frameNumber Int // 枠番
+  /// 馬番
   horseNumber Int // 馬番
+  /// 馬名
   horseName   String // 馬名
+  /// 性別
   sex         String // 性（例: 牡）
+  /// 馬齢
   age         String // 齢（例: 3）
+  /// 斤量
   weight      Float? // 斤量（kg）
+  /// 騎手
   jockey      String // 騎手
+  /// 調教師
   trainer     String // 調教師
+  /// 馬体重
+  bodyWeight  String? // 例: 460(+4)
+  /// 単勝人気
+  oddsRank    Int? // 単勝人気（例: 1）
+  /// 単勝オッズ
+  odds        Float? // 単勝オッズ（例: 2.5）
+  /// 着順
+  rank        Int? // 着順（例: 1）
+  /// タイム
+  time        String? // タイム（例: 1:34.5）
+  /// 着差
+  margin      String? // 着差（例: クビ）
+  /// 登録日時
   createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  /// 更新日時
   updatedAt   DateTime @updatedAt @db.Timestamptz(3)
 
   race Race @relation(fields: [raceId], references: [id], onDelete: Cascade)
