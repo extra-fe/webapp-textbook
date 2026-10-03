@@ -4,10 +4,18 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { AppModule } from './app.module';
 import { resolveCorsConfig } from './common/cors/cors-config';
+import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableShutdownHooks(); // SIGTERM で onApplicationShutdown を呼ばせる
+
+  // AppModule.configure() の登録はボディパーサーより後ろに積まれるため、
+  // パーサー層で起きたエラーのレスポンスに X-Request-Id が付かない。
+  // 問い合わせで一番 ID が欲しい場面なので、ここでも通しておく。
+  const requestIdMiddleware = new RequestIdMiddleware();
+  app.use(requestIdMiddleware.use.bind(requestIdMiddleware));
+
   app.useGlobalPipes(new ZodValidationPipe());
 
   const corsConfig = resolveCorsConfig(

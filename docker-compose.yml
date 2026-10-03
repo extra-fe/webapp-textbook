@@ -24,6 +24,17 @@ services:
       - keycloak-data:/opt/keycloak/data
       - ./keycloak:/opt/keycloak/data/import
 
+  # トレースの確認用。既定では起動しない
+  #   docker compose --profile otel up -d
+  jaeger:
+    # v1 の all-in-one は 2025年末で EOL。v2 を使う
+    image: jaegertracing/jaeger:2.21.0
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "4318:4318"    # OTLP HTTP 受信
+    profiles:
+      - otel
+
 volumes:
   pg-local-data:
   keycloak-data:

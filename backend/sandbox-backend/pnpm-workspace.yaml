@@ -4,3 +4,4 @@ allowBuilds:
   "@prisma/engines": true # Prisma のエンジンバイナリ配置
   prisma: true # Prisma CLI 本体
   "@scarf/scarf": false # @nestjs/swagger の解析用。送信させないので実行しない
+  protobufjs: false # 版数スキームの警告を出すだけ。ファイルは置かない
