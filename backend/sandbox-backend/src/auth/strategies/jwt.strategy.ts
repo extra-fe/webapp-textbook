@@ -26,7 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     const user = await this.prisma.user.findUnique({
       where: { externalId: sub },
-      select: { id: true },
+      select: { id: true, roles: { select: { role: true } } }, // roles を追加
     });
 
     // IdP で認証できてもアプリに登録されていなければ利用させない
@@ -39,7 +39,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       sub,
       name: payload['name'] as string | undefined,
       email: payload['email'] as string | undefined,
-      roles: (payload['realm_access'] as { roles?: string[] })?.roles ?? [],
+      // JWT のロールは発行時点のスナップショットなので使わない。
+      // DB を見ることで、ロール変更が次のリクエストから即座に効く。
+      roles: user.roles.map((r) => r.role),
     };
   }
 }
