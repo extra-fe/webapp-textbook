@@ -1,9 +1,11 @@
 import { createI18n } from "vue-i18n";
 import commonEn from "./locales/en/common.json";
 import errorEn from "./locales/en/error.json";
+import maintenanceEn from "./locales/en/maintenance.json";
 import raceEn from "./locales/en/race.json";
 import commonJa from "./locales/ja/common.json";
 import errorJa from "./locales/ja/error.json";
+import maintenanceJa from "./locales/ja/maintenance.json";
 import raceJa from "./locales/ja/race.json";
 
 /**
@@ -12,8 +14,8 @@ import raceJa from "./locales/ja/race.json";
  * あるので、コードに書くキーと JSON 上のキーがそのまま一致する。
  */
 const messages = {
-  ja: { ...commonJa, ...errorJa, ...raceJa },
-  en: { ...commonEn, ...errorEn, ...raceEn },
+  ja: { ...commonJa, ...errorJa, ...maintenanceJa, ...raceJa },
+  en: { ...commonEn, ...errorEn, ...maintenanceEn, ...raceEn },
 };
 
 export const i18n = createI18n({
