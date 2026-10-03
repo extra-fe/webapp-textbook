@@ -7,6 +7,7 @@ export class MockAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
 
     request.user = {
+      id: process.env.MOCK_USER_ID ?? '00000000-0000-0000-0000-000000000001',
       sub: process.env.MOCK_USER_SUB ?? 'mock-user-id-123',
       name: 'Mock User',
       email: 'mock@example.com',
