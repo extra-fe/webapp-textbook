@@ -31,7 +31,7 @@ export const useApiCaller = () => {
     // コンポーザブルの先頭で .value を取り出すと、そのコンポーネントが
     // 作られた瞬間の値で固定されてしまう。
     if (authEnabled && requiresAuth && isAuthenticated.value) {
-      headers["Authorization"] = `Bearer ${await getToken()}`;
+      headers.Authorization = `Bearer ${await getToken()}`;
     }
 
     const response = await apiClient.request<T>({
