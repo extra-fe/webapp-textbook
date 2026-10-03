@@ -1,4 +1,5 @@
 import { useAuth } from "../auth/auth-context";
+import { getSingleFlightToken } from "../auth/single-flight-token";
 import { apiClient, type Method } from "../lib/http-client";
 
 /**
@@ -31,7 +32,8 @@ export const useApiCaller = () => {
     // コンポーザブルの先頭で .value を取り出すと、そのコンポーネントが
     // 作られた瞬間の値で固定されてしまう。
     if (authEnabled && requiresAuth && isAuthenticated.value) {
-      headers.Authorization = `Bearer ${await getToken()}`;
+      const token = await getSingleFlightToken(getToken);
+      headers.Authorization = `Bearer ${token}`;
     }
 
     const response = await apiClient.request<T>({
