@@ -1,0 +1,14 @@
+{
+  "common": {
+    "error": {
+      "BAD_REQUEST": "The input contains an error.",
+      "CONFLICT": "Another user updated this first.",
+      "CONFLICT_RESYNCED": "Another user updated this first, so the latest content has been loaded.",
+      "FORBIDDEN": "You do not have permission to perform this operation.",
+      "NOT_FOUND": "The requested data was not found.",
+      "SERVER_ERROR": "A server error occurred. Please try again later.",
+      "UNAUTHORIZED": "Authentication is required. Please sign in again.",
+      "UNKNOWN": "The operation failed."
+    }
+  }
+}
