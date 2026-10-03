@@ -18,6 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "start:otel": "nest build && node -r ./dist/backend/sandbox-backend/src/otel/instrumentation dist/backend/sandbox-backend/src/main",
     "gen:db-schema": "ts-node -r tsconfig-paths/register scripts/gen-db-schema.ts",
     "db:seed": "ts-node -r tsconfig-paths/register prisma/seed.ts"
   },
@@ -27,6 +28,10 @@
     "@nestjs/passport": "^12.0.0",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.4.7",
+    "@opentelemetry/api": "^1.9.1",
+    "@opentelemetry/auto-instrumentations-node": "^0.80.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.222.0",
+    "@opentelemetry/sdk-node": "^0.222.0",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "jwks-rsa": "^4.1.0",
