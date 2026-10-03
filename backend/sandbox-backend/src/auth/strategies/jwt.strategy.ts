@@ -28,6 +28,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       // audience は未設定なら渡さない（渡すと必ず検証される）
       ...(audience ? { audience } : {}),
       algorithms: ['RS256'],
+      // 既定で false。exp クレームは passport-jwt が自動検証する。
+      // true にすると期限切れトークンが通るため、意図として明示しておく。
+      ignoreExpiration: false,
     });
   }
 
