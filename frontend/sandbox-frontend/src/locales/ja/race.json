@@ -10,6 +10,12 @@
       "confirmDialog": {
         "title": "レースの作成確認",
         "message": "レースを作成します。よろしいですか？"
+      },
+      "leaveDialog": {
+        "title": "入力内容が保存されていません",
+        "message": "このまま移動すると入力した内容は失われます。移動しますか？",
+        "confirmLabel": "移動する",
+        "cancelLabel": "入力に戻る"
       }
     },
     "detail": {
