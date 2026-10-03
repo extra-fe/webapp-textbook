@@ -15,7 +15,8 @@
     "format": "biome format --write src/",
     "lint:types": "eslint .",
     "lint:ci": "biome check src/ && eslint .",
-    "lint:i18n": "tsx scripts/check-i18n.ts"
+    "lint:i18n": "tsx scripts/check-i18n.ts",
+    "gen:screen-list": "tsx scripts/gen-screen-list.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
