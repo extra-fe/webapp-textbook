@@ -1,25 +1,46 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
-import type { Race } from "../../../../shared/src/race-validation";
+import type {
+  CreateRaceFormValues,
+  Race,
+} from "../../../../shared/src/race-validation";
 import { useApiCaller } from "../composables/useApiCaller";
 import { isCancel } from "../lib/http-client";
+import RaceCreateForm from "./RaceCreateForm.vue";
 
 const { callApi } = useApiCaller();
 const races = ref<Race[]>([]);
 const error = ref<string | null>(null);
 const controller = new AbortController();
 
+const fetchRaces = async () => {
+  races.value = await callApi<Race[]>("/api/races", {
+    signal: controller.signal,
+  });
+};
+
 onMounted(() => {
-  callApi<Race[]>("/api/races", { signal: controller.signal })
-    .then((data) => {
-      races.value = data;
-    })
-    .catch((err: unknown) => {
-      if (isCancel(err)) return;
-      console.error(err);
-      error.value = "レース一覧の取得に失敗しました";
-    });
+  fetchRaces().catch((err: unknown) => {
+    if (isCancel(err)) return;
+    console.error(err);
+    error.value = "レース一覧の取得に失敗しました";
+  });
 });
+
+// フォームは YYYY-MM-DD を返す。API は ISO8601 を要求するので、
+// API を呼ぶ側であるこちらで変換する。
+const onSubmit = async (values: CreateRaceFormValues) => {
+  await callApi("/api/races", {
+    method: "POST",
+    body: {
+      date: `${values.date}T00:00:00.000Z`,
+      name: values.name,
+      venue: values.venue,
+      entries: [],
+    },
+  });
+  await fetchRaces();
+};
 
 // 一覧が返る前に画面を離れたら通信を打ち切る
 onUnmounted(() => controller.abort());
@@ -33,4 +54,6 @@ onUnmounted(() => controller.abort());
       {{ race.name }}（{{ race.venue }}／出走 {{ race.entries.length }} 頭）
     </li>
   </ul>
+
+  <RaceCreateForm :on-submit="onSubmit" />
 </template>
