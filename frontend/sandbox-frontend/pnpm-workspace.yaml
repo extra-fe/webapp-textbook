@@ -1,3 +1,6 @@
+allowBuilds:
+  esbuild: true # tsx が使うネイティブバイナリの配置
+
 peerDependencyRules:
   allowedVersions:
     "@vee-validate/zod>zod": "4"

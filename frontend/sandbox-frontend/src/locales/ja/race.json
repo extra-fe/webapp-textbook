@@ -1,0 +1,9 @@
+{
+  "race": {
+    "list": {
+      "fetchError": "レース一覧の取得に失敗しました",
+      "renameButton": "会場名を直す",
+      "updateSuccess": "更新しました。"
+    }
+  }
+}

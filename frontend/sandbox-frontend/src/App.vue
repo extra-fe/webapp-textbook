@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAuth } from "./auth/auth-context";
+import ToastHost from "./components/ToastHost.vue";
 import RaceListPage from "./pages/RaceListPage.vue";
 
 const { isAuthenticated, isLoading, user, login, logout } = useAuth();
@@ -43,4 +44,6 @@ const { isAuthenticated, isLoading, user, login, logout } = useAuth();
       </div>
     </div>
   </div>
+
+  <ToastHost />
 </template>
