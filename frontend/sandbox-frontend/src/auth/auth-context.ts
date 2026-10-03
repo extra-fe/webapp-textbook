@@ -1,4 +1,4 @@
-import { inject, type InjectionKey, type Ref } from "vue";
+import { type InjectionKey, inject, type Ref } from "vue";
 
 export interface AuthUser {
   name?: string;
