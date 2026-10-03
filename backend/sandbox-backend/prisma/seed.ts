@@ -15,6 +15,9 @@ config();
 const MOCK_USER_ID =
   process.env.MOCK_USER_ID ?? '00000000-0000-0000-0000-000000000001';
 const MOCK_USER_SUB = process.env.MOCK_USER_SUB ?? 'mock-user-id-123';
+// viewer ロールだけを持つ検証用ユーザー。MOCK_USER_ID にこの値を入れると
+// viewer として API を叩ける（2.6 節のロール制御の確認用）。
+const VIEWER_USER_ID = '00000000-0000-0000-0000-000000000002';
 
 // [frameNumber, horseNumber, horseName, sex, age, weight(斤量), jockey, trainer,
 //  bodyWeight, oddsRank, odds, rank, time, margin]
@@ -3691,8 +3694,9 @@ async function main() {
 
     await client.query(
       `INSERT INTO users (id, "externalId", provider, email, name, "createdAt", "updatedAt")
-       VALUES (gen_random_uuid(), 'mock-viewer-user', 'keycloak', 'viewer@example.com', 'Viewer User', NOW(), NOW())
+       VALUES ($1, 'mock-viewer-user', 'keycloak', 'viewer@example.com', 'Viewer User', NOW(), NOW())
        ON CONFLICT ("externalId") DO NOTHING`,
+      [VIEWER_USER_ID],
     );
     await client.query(
       `INSERT INTO user_roles ("userId", role)
