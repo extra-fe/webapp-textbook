@@ -8,6 +8,23 @@ import { resolveCorsConfig } from './common/cors/cors-config';
 import { JsonLoggerService } from './common/logger/json-logger.service';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
+const bootstrapLogger = new JsonLoggerService(
+  (process.env.LOG_LEVEL ?? 'error') as LogLevel,
+);
+
+process.on('unhandledRejection', (reason: unknown) => {
+  bootstrapLogger.error(
+    reason instanceof Error ? reason.message : String(reason),
+    reason instanceof Error ? reason.stack : undefined,
+    'unhandledRejection',
+  );
+});
+
+process.on('uncaughtException', (error: Error) => {
+  bootstrapLogger.error(error.message, error.stack, 'uncaughtException');
+  process.exit(1); // uncaughtExceptionはプロセスを終了させる
+});
+
 async function bootstrap() {
   const logLevel = (process.env.LOG_LEVEL ?? 'error') as LogLevel;
   const app = await NestFactory.create(AppModule, {
@@ -51,4 +68,14 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000);
 }
-void bootstrap();
+void bootstrap().catch((e: unknown) => {
+  // 起動に失敗したら異常終了させる。unhandledRejection はログだけ出して継続する
+  // 方針なので、ここで catch しないと CORS の設定ミスのような致命的な起動エラーでも
+  // 終了コードが 0 になり、コンテナ基盤が異常と判断できない。
+  bootstrapLogger.error(
+    e instanceof Error ? e.message : String(e),
+    e instanceof Error ? e.stack : undefined,
+    'bootstrap',
+  );
+  process.exit(1);
+});
