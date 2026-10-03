@@ -1,0 +1,5 @@
+allowBuilds:
+  "@parcel/watcher": true   # Jest のファイル監視（ネイティブ実装）
+  unrs-resolver: true       # Jest のモジュール解決（ネイティブ実装）
+  "@prisma/engines": true   # Prisma のエンジンバイナリ配置
+  prisma: true              # Prisma CLI 本体

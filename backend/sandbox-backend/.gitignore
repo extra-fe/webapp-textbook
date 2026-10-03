@@ -1,0 +1,13 @@
+node_modules
+
+# ビルド出力（pnpm build で再生成できる）
+/dist
+
+# テストのカバレッジ出力（第3章の test:cov で再生成できる）
+/coverage
+
+# 環境変数（.env.example をコミットする）
+.env
+
+# Prisma クライアントの生成物（prisma generate で再生成できる）
+/src/generated/prisma

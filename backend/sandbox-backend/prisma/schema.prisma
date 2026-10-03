@@ -1,0 +1,45 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  // NestJS は CommonJS ビルドのため cjs を明示する
+  moduleFormat = "cjs"
+  runtime      = "nodejs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Race {
+  id        String   @id @default(uuid()) @db.Uuid // レースID
+  date      DateTime @db.Timestamptz(3) // 開催日（UTCで保存）
+  name      String // レース名
+  venue     String // 競馬場
+  version   Int      @default(0) // 楽観ロック用バージョン
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  entries   Entry[] // 出走馬（1対多リレーション）
+
+  @@unique([date, name, venue]) // 同一日・同名・同会場のレース重複を防ぐ
+  @@map("races")
+}
+
+model Entry {
+  id          String   @id @default(uuid()) @db.Uuid // 出走馬ID
+  raceId      String   @db.Uuid // レースID（外部キー）
+  frameNumber Int // 枠番
+  horseNumber Int // 馬番
+  horseName   String // 馬名
+  sex         String // 性（例: 牡）
+  age         String // 齢（例: 3）
+  weight      Float? // 斤量（kg）
+  jockey      String // 騎手
+  trainer     String // 調教師
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+
+  race Race @relation(fields: [raceId], references: [id], onDelete: Cascade)
+
+  @@unique([raceId, horseNumber]) // 同一レース内で馬番の重複を防ぐ
+  @@map("entries")
+}
