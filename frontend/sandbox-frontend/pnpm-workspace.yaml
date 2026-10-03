@@ -1,0 +1,3 @@
+peerDependencyRules:
+  allowedVersions:
+    "@vee-validate/zod>zod": "4"

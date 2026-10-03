@@ -7,7 +7,8 @@
     "moduleResolution": "bundler",
     "paths": {
       "zod": ["./node_modules/zod"],
-      "zod/*": ["./node_modules/zod/*"]
+      "zod/*": ["./node_modules/zod/*"],
+      "@/*": ["./src/*"]
     },
 
     /* Linting */
