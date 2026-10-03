@@ -32,7 +32,26 @@
       ],
       "webOrigins": [
         "http://localhost:5173"
+      ],
+      "protocolMappers": [
+        {
+          "name": "sandbox-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "sandbox-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
       ]
+    },
+    {
+      "clientId": "sandbox-api",
+      "enabled": true,
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false
     }
   ],
   "users": [

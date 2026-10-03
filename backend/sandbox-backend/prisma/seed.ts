@@ -3650,6 +3650,16 @@ async function seedKeycloakTestUser(client: Client): Promise<void> {
     return;
   }
 
+  // Keycloak のボリュームを作り直すと sub が変わる。externalId で
+  // 衝突しないため、放っておくと同じユーザーの行が二重にできる。
+  // users.id は races.createdBy から参照されているので、行を作り直さず
+  // 既存行の externalId を付け替える。
+  await client.query(
+    `UPDATE users SET "externalId" = $1, "updatedAt" = NOW()
+     WHERE email = $2 AND "externalId" <> $1`,
+    [sub, `${username}@example.com`],
+  );
+
   const inserted = await client.query<{ id: string }>(
     `INSERT INTO users (id, "externalId", provider, email, name, "createdAt", "updatedAt")
      VALUES (gen_random_uuid(), $1, 'keycloak', $2, $3, NOW(), NOW())
