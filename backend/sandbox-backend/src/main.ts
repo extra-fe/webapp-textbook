@@ -4,7 +4,10 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { AppModule } from './app.module';
+import { SystemClock } from './common/clock/clock';
 import { resolveCorsConfig } from './common/cors/cors-config';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
+import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter';
 import { JsonLoggerService } from './common/logger/json-logger.service';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
@@ -39,6 +42,14 @@ async function bootstrap() {
   app.use(requestIdMiddleware.use.bind(requestIdMiddleware));
 
   app.useGlobalPipes(new ZodValidationPipe());
+
+  // 登録順が結果を変える。NestJS は配列を反転してから先頭一致で探すため、
+  // 後に登録したフィルターほど先に評価される。だから「汎用 → 具体」に並べる。
+  const clock = new SystemClock();
+  app.useGlobalFilters(
+    new GlobalExceptionFilter(clock), // 汎用：あらゆる例外を統一フォーマットへ
+    new PrismaExceptionFilter(clock), // 具体的：Prisma エラーを処理
+  );
 
   const corsConfig = resolveCorsConfig(
     process.env.CORS_ORIGIN,

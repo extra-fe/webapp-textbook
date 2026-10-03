@@ -1,19 +1,19 @@
 import {
   ConflictException,
   Injectable,
-  NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
-import { Prisma } from '../generated/prisma/client';
+import { ErrorCode } from '../common/errors/error-code.enum';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRaceDto } from './dto/create-race.dto';
 import { UpdateRaceDto } from './dto/update-race.dto';
 
-/** Prisma のユニーク制約違反かを判定する。P2002 は Prisma が定めた
- *  エラーコードで、一意制約違反を表す（Prisma は定数を公開していない） */
-function isUniqueConstraintError(e: unknown): boolean {
-  return (
-    e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002'
-  );
+/** リソース未存在は 404 ではなく 422 で返す。never なので呼び出し側で到達不能になる */
+function raceNotFound(id: string): never {
+  throw new UnprocessableEntityException({
+    message: `Race with id ${id} not found`,
+    code: ErrorCode.NOT_FOUND, // 422 の既定は NOT_FOUND だが明示する
+  });
 }
 
 @Injectable()
@@ -33,31 +33,22 @@ export class RaceService {
       where: { id },
       include: { entries: { orderBy: { horseNumber: 'asc' } } },
     });
-    if (!race) throw new NotFoundException(`Race with id ${id} not found`);
+    if (!race) raceNotFound(id);
     return race;
   }
 
   async create(createRaceDto: CreateRaceDto, operatorId: string) {
     const { entries, ...raceData } = createRaceDto;
-    try {
-      return await this.prisma.race.create({
-        data: {
-          ...raceData,
-          createdBy: operatorId,
-          updatedBy: operatorId,
-          entries: { create: entries },
-        },
-        include: { entries: true },
-      });
-    } catch (e) {
-      // @@unique([date, name, venue]) 違反。第4章でこの変換は例外フィルタに移す
-      if (isUniqueConstraintError(e)) {
-        throw new ConflictException(
-          '同じ日付・レース名・競馬場のレースが既に存在します',
-        );
-      }
-      throw e;
-    }
+    // @@unique 違反（P2002）は PrismaExceptionFilter が 409 に変換するので catch しない
+    return await this.prisma.race.create({
+      data: {
+        ...raceData,
+        createdBy: operatorId,
+        updatedBy: operatorId,
+        entries: { create: entries },
+      },
+      include: { entries: true },
+    });
   }
 
   async update(
@@ -79,8 +70,7 @@ export class RaceService {
 
       if (result.count === 0) {
         const exists = await tx.race.findUnique({ where: { id } });
-        if (!exists)
-          throw new NotFoundException(`Race with id ${id} not found`);
+        if (!exists) raceNotFound(id);
         throw new ConflictException(
           `Race with id ${id} was updated by another request. Reload and retry.`,
         );
@@ -93,7 +83,6 @@ export class RaceService {
   async remove(id: string) {
     // entries は onDelete: Cascade で自動的に消える
     const result = await this.prisma.race.deleteMany({ where: { id } });
-    if (result.count === 0)
-      throw new NotFoundException(`Race with id ${id} not found`);
+    if (result.count === 0) raceNotFound(id);
   }
 }
