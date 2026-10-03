@@ -3,11 +3,24 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { AppModule } from './app.module';
+import { resolveCorsConfig } from './common/cors/cors-config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableShutdownHooks(); // SIGTERM で onApplicationShutdown を呼ばせる
   app.useGlobalPipes(new ZodValidationPipe());
+
+  const corsConfig = resolveCorsConfig(
+    process.env.CORS_ORIGIN,
+    process.env.CORS_METHODS,
+  );
+  if (corsConfig.enabled) {
+    app.enableCors({
+      origin: corsConfig.origin,
+      methods: corsConfig.methods,
+      credentials: true,
+    });
+  }
 
   if (process.env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()
