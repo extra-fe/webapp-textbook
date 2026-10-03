@@ -117,3 +117,26 @@ model Entry {
   @@unique([raceId, horseNumber]) // 同一レース内で馬番の重複を防ぐ
   @@map("entries")
 }
+
+/// お知らせ
+model Announcement {
+  /// お知らせID
+  id        String   @id @default(uuid()) @db.Uuid
+  /// タイトル
+  title     String
+  /// 本文
+  body      String
+  /// 重要度
+  level     String   @default("info") // info / warning / error
+  /// 掲載開始日時
+  startsAt  DateTime @db.Timestamptz(3)
+  /// 掲載終了日時
+  endsAt    DateTime @db.Timestamptz(3)
+  /// 登録日時
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  /// 更新日時
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  @@index([endsAt, startsAt])
+  @@map("announcements")
+}
