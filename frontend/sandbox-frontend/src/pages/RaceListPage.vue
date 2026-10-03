@@ -5,6 +5,7 @@ import type {
   CreateRaceFormValues,
   Race,
 } from "../../../../shared/src/race-validation";
+import ResultPanel from "../components/ResultPanel.vue";
 import { useToast } from "../components/toast-context";
 import {
   ApiError,
@@ -47,6 +48,7 @@ const { callApi } = useApiCaller({
 const races = ref<Race[]>([]);
 const selectedRaceId = ref<string | null>(null);
 const error = ref<string | null>(null);
+const detailLoading = ref(false);
 const controller = new AbortController();
 
 // selectedRace は races から導出する（別の ref を持たない）
@@ -60,10 +62,15 @@ async function fetchRaces(signal?: AbortSignal) {
 
 const fetchRace = async (id: string) => {
   selectedRaceId.value = id;
-  const detail = await callApi<Race>(`/api/races/${id}`);
-  // races 配列内の該当エントリを最新の詳細データで更新する
-  races.value = races.value.map((r) => (r.id === id ? detail : r));
-  // selectedRace は computed が自動的に最新の races から再計算する
+  detailLoading.value = true;
+  try {
+    const detail = await callApi<Race>(`/api/races/${id}`);
+    // races 配列内の該当エントリを最新の詳細データで更新する
+    races.value = races.value.map((r) => (r.id === id ? detail : r));
+    // selectedRace は computed が自動的に最新の races から再計算する
+  } finally {
+    detailLoading.value = false;
+  }
 };
 
 const renameVenue = async (race: Race) => {
@@ -133,15 +140,11 @@ onUnmounted(() => controller.abort());
     </li>
   </ul>
 
-  <section v-if="selectedRace" class="mt-4 rounded border border-slate-200 p-3">
-    <h2 class="text-sm font-bold text-slate-900">{{ selectedRace.name }}</h2>
-    <p class="text-xs text-slate-600">{{ selectedRace.venue }}</p>
-    <ol class="mt-1 text-xs text-slate-700">
-      <li v-for="entry in selectedRace.entries" :key="entry.id">
-        {{ entry.horseNumber }}. {{ entry.horseName }}（{{ entry.jockey }}）
-      </li>
-    </ol>
-  </section>
+  <ResultPanel
+    :race="selectedRace"
+    :loading="detailLoading"
+    @close="selectedRaceId = null"
+  />
 
   <RaceCreateForm :on-submit="onSubmit" />
 </template>

@@ -3,7 +3,21 @@
     "list": {
       "fetchError": "Failed to load the race list",
       "renameButton": "Fix the venue name",
-      "updateSuccess": "Updated."
+      "updateSuccess": "Updated.",
+      "detailLoading": "Loading..."
+    },
+    "create": {
+      "confirmDialog": {
+        "title": "Confirm race creation",
+        "message": "Create this race. Are you sure?"
+      }
+    },
+    "detail": {
+      "closeButton": "Close"
+    },
+    "resultPanel": {
+      "label": "Result",
+      "placeholder": "Select a race to see its details here"
     }
   }
 }
