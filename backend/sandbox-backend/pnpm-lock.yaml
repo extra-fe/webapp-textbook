@@ -56,6 +56,9 @@ importers:
       cacheable:
         specifier: ^2.5.0
         version: 2.5.0
+      dotenv:
+        specifier: ^18.0.5
+        version: 18.0.5
       helmet:
         specifier: ^8.3.0
         version: 8.3.0
@@ -120,9 +123,6 @@ importers:
       cross-env:
         specifier: ^10.1.0
         version: 10.1.0
-      dotenv:
-        specifier: ^18.0.5
-        version: 18.0.5
       eslint:
         specifier: ^9.18.0
         version: 9.39.5(jiti@2.7.0)(supports-color@8.1.1)

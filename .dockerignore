@@ -1,0 +1,40 @@
+# ここに書いたものは Docker デーモンへ送られず、イメージにも入らない。
+
+# 依存とビルド成果物（コンテナ内で作り直す）
+node_modules
+**/node_modules
+dist
+**/dist
+
+# Prisma が生成するクライアント（コンテナ内で prisma generate する）
+**/src/generated
+
+# シークレット（イメージへの焼き込み事故を防ぐ）
+.env
+.env.*
+!.env.example
+
+# ローカル専用（コンテナのビルドには不要）
+docker-compose.yml
+keycloak
+tests
+frontend
+
+# Git / CI / エディタ
+.git
+.gitignore
+.github
+.claude
+.vscode
+.idea
+
+# テストとカバレッジ
+**/*.spec.ts
+**/*.e2e-spec.ts
+**/coverage
+**/test-results
+**/playwright-report
+
+# ドキュメント
+**/*.md
+docs
