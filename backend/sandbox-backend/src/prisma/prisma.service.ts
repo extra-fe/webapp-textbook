@@ -27,14 +27,47 @@ export class PrismaService
       connectionTimeoutMillis: env('DATABASE_CONNECTION_TIMEOUT_MS', 5_000), // 接続獲得タイムアウト
     });
 
+    // --- N+1 検出用クエリログ設定（6.3節）---
+    // query は $on で受け取るため常に emit: 'event'。それ以外は stdout へ流す。
+    const rawLevels = process.env.PRISMA_LOG_LEVEL?.split(',') ?? [];
+    const isDevQueryLog =
+      process.env.NODE_ENV === 'development' && rawLevels.includes('query');
+    const log: Prisma.LogDefinition[] = [
+      { level: 'query', emit: 'event' },
+      ...rawLevels
+        .filter((l) => l !== 'query')
+        .map((level) => ({
+          level: level as Prisma.LogLevel,
+          emit: 'stdout' as const,
+        })),
+    ];
+
     super({
       adapter,
+      log,
       transactionOptions: {
         // interactive transaction の既定は 5s。バッチを見越して 15s にする
         timeout: env('PRISMA_TX_TIMEOUT', 15_000),
         maxWait: env('PRISMA_TX_MAX_WAIT', 5_000),
         isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted,
       },
+    });
+
+    // log を動的な配列で組み立てているため、TypeScript は $on の
+    // イベント名を never に推論してしまう。ここだけ型を明示する。
+    // $on('query') は $connect() より前（コンストラクタ内）で登録する必要がある。
+    (
+      this as unknown as {
+        $on: (event: string, cb: (e: Prisma.QueryEvent) => void) => void;
+      }
+    ).$on('query', (e) => {
+      // 開発時は全クエリを params 付きで出力（N+1 検出）。
+      // e.duration は 106.80580000000009 のような浮動小数で来るので丸める。
+      if (isDevQueryLog) {
+        this.logger.debug(
+          `[query] ${e.query} | params=${e.params} | ${Math.round(e.duration)}ms`,
+        );
+      }
     });
   }
 
