@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 .env
+
+# テストのカバレッジ出力（test:coverage で再生成できる）
+coverage

@@ -14,10 +14,10 @@
     "start:prod": "node dist/backend/sandbox-backend/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
+    "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test:cov": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --config ./test/jest-e2e.json",
     "start:otel": "node --require ts-node/register --require ./src/otel/instrumentation.ts -r tsconfig-paths/register src/main.ts",
     "check:auth-guards": "ts-node -r tsconfig-paths/register scripts/check-auth-guards.ts",
     "check:audit-columns": "ts-node -r tsconfig-paths/register scripts/check-audit-columns.ts",
@@ -95,9 +95,30 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.(t|j)s",
+      "!**/*.module.ts",
+      "!main.ts",
+      "!**/*.dto.ts",
+      "!**/*.spec.ts",
+      "!generated/**",
+      "!otel/**"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "coverageThreshold": {
+      "global": {
+        "statements": 42,
+        "branches": 32,
+        "functions": 33,
+        "lines": 41
+      }
+    },
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1",
+      "^zod$": "<rootDir>/../node_modules/zod",
+      "^zod/(.*)$": "<rootDir>/../node_modules/zod/$1",
+      "^nestjs-zod$": "<rootDir>/../node_modules/nestjs-zod",
+      "^nestjs-zod/(.*)$": "<rootDir>/../node_modules/nestjs-zod/$1"
+    }
   }
 }

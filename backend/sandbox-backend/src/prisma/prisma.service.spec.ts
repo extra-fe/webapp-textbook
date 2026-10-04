@@ -28,7 +28,9 @@ describe('PrismaService', () => {
       await app.close();
 
       expect(shutdownSpy).toHaveBeenCalled();
-    });
+      // カバレッジ計測下では Prisma クライアントの読み込みが遅く、
+      // 既定の5秒では間に合わない（pnpm test は通るのに test:cov だけ落ちる）
+    }, 30_000);
   });
 
   describe('起動時の接続確認とリトライ', () => {
