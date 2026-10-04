@@ -1,9 +1,20 @@
 {
   "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": ".",
+  "rootDir": "..",
   "testEnvironment": "node",
-  "testRegex": ".e2e-spec.ts$",
+  "testRegex": "test/.+\\.e2e-spec\\.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
-  }
+  },
+  "globalSetup": "<rootDir>/test/global-setup.ts",
+  "moduleNameMapper": {
+    "^src/(.*)$": "<rootDir>/src/$1",
+    "^zod$": "<rootDir>/node_modules/zod",
+    "^zod/(.*)$": "<rootDir>/node_modules/zod/$1",
+    "^nestjs-zod$": "<rootDir>/node_modules/nestjs-zod",
+    "^nestjs-zod/(.*)$": "<rootDir>/node_modules/nestjs-zod/$1"
+  },
+  "setupFiles": ["<rootDir>/test/setup-env.ts"],
+  "testTimeout": 30000,
+  "maxWorkers": 1
 }
