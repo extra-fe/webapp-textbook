@@ -57,6 +57,17 @@ erDiagram
         timestamptz          updatedAt
     }
 
+    announcements {
+        uuid                 id                       PK
+        varchar              title
+        varchar              body
+        varchar              level                         "info / warning / error"
+        timestamptz          startsAt
+        timestamptz          endsAt
+        timestamptz          createdAt
+        timestamptz          updatedAt
+    }
+
     user_roles }o--|| users : "user"
     races }o--|| users : "creator"
     races }o--|| users : "updater"
@@ -158,6 +169,27 @@ erDiagram
 | PRIMARY KEY | `id` | — |
 | FOREIGN KEY | `raceId` → `races`(`id`) | `ON DELETE CASCADE` |
 | UNIQUE | (`raceId`, `horseNumber`) | — |
+
+---
+
+### `announcements` テーブル
+
+| カラム名 | 論理名 | 型 | NULL | デフォルト | 説明 |
+|---|---|---|---|---|---|
+| `id` | お知らせID | `uuid` | NO | `uuid()` | PK —  |
+| `title` | タイトル | `varchar` | NO | `—` |  |
+| `body` | 本文 | `varchar` | NO | `—` |  |
+| `level` | 重要度 | `varchar` | NO | `"info"` | info / warning / error |
+| `startsAt` | 掲載開始日時 | `timestamptz` | NO | `—` |  |
+| `endsAt` | 掲載終了日時 | `timestamptz` | NO | `—` |  |
+| `createdAt` | 登録日時 | `timestamptz` | NO | `now()` |  |
+| `updatedAt` | 更新日時 | `timestamptz` | NO | `—` |  |
+
+**制約・インデックス**
+
+| 種別 | 対象カラム | 内容 |
+|---|---|---|
+| PRIMARY KEY | `id` | — |
 
 ## リレーション
 
