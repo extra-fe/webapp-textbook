@@ -15,6 +15,9 @@ import type { AuthenticatedUser } from '../types';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+  // 進行中のDB取得をキーごとに持つ（プロセス内・タスク単位）
+  private readonly inflight = new Map<string, Promise<AuthenticatedUser>>();
+
   constructor(
     @Inject(IDP_PROVIDER_TOKEN) private readonly idp: IIdpProvider,
     private readonly prisma: PrismaService,
@@ -49,10 +52,24 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const claims = this.idp.mapClaims(payload);
     const cacheKey = `rbac:${claims.sub}`;
 
+    // ① キャッシュヒットなら即返す
     const cached = await this.cache.get<AuthenticatedUser>(cacheKey);
     if (cached) return cached;
 
-    return this.fetchAndCache(cacheKey, claims);
+    // ② 進行中の取得があればそれに相乗りする（シングルフライト）
+    const existing = this.inflight.get(cacheKey);
+    if (existing) return existing;
+
+    // ③ 自分が代表としてDB取得を開始し、Promise を登録する
+    const promise = this.fetchAndCache(cacheKey, claims);
+    this.inflight.set(cacheKey, promise);
+    try {
+      return await promise;
+    } finally {
+      // ④ 成否にかかわらず必ずマップから除去する。残すと失敗した Promise を
+      //    後続が掴み続け、DBが復旧しても失敗し続ける
+      this.inflight.delete(cacheKey);
+    }
   }
 
   private async fetchAndCache(
