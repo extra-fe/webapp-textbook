@@ -1,7 +1,9 @@
 import 'dotenv/config';
 import { LogLevel } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { AppModule } from './app.module';
 import { SystemClock } from './common/clock/clock';
@@ -30,7 +32,9 @@ process.on('uncaughtException', (error: Error) => {
 
 async function bootstrap() {
   const logLevel = (process.env.LOG_LEVEL ?? 'error') as LogLevel;
-  const app = await NestFactory.create(AppModule, {
+  // Express 固有の API（disable / useBodyParser）を使うため、型引数を付けて生成する。
+  // 素の INestApplication には disable() が無い
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: new JsonLoggerService(logLevel),
   });
   app.enableShutdownHooks(); // SIGTERM で onApplicationShutdown を呼ばせる
@@ -40,6 +44,19 @@ async function bootstrap() {
   // 問い合わせで一番 ID が欲しい場面なので、ここでも通しておく。
   const requestIdMiddleware = new RequestIdMiddleware();
   app.use(requestIdMiddleware.use.bind(requestIdMiddleware));
+
+  // HTTP セキュリティヘッダ (helmet): CSP/X-Frame-Options/X-Content-Type-Options 等を一括付与
+  // CloudFront 側のレスポンスヘッダポリシーと二重防御。
+  app.use(
+    helmet({
+      hsts:
+        process.env.NODE_ENV === 'production'
+          ? { maxAge: 31536000, includeSubDomains: true }
+          : false,
+    }),
+  );
+  // helmet v5+ は hidePoweredBy をデフォルトに含まないため Express レベルで明示的に無効化
+  app.disable('x-powered-by');
 
   app.useGlobalPipes(new ZodValidationPipe());
 
