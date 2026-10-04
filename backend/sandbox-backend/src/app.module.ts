@@ -4,6 +4,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AdminModule } from './admin/admin.module';
 import { AnnouncementModule } from './announcement/announcement.module';
 import { AuthModule } from './auth/auth.module';
 import { AppThrottlerGuard } from './common/guards/throttler.guard';
@@ -37,6 +38,7 @@ import { RaceModule } from './race/race.module';
     AuthModule,
     RaceModule,
     AnnouncementModule,
+    AdminModule,
   ],
   controllers: [AppController, HealthController],
   providers: [
