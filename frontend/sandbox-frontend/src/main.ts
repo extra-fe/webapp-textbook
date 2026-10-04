@@ -18,6 +18,8 @@ if (isMaintenanceMode() && !isMaintenanceBypassed()) {
     .use(toastPlugin)
     .use(authAdapter)
     .use(router);
+  // 開発時だけ、ブラウザの Performance パネルに計測点を出す（7.6節）
+  app.config.performance = import.meta.env.DEV;
   installGlobalErrorHandling(app, router);
   app.mount("#app");
 }
