@@ -12,7 +12,8 @@ import RaceListPage from "./RaceListPage.vue";
       ホームへ
     </RouterLink>
 
-    <ProtectedRoute>
+    <!-- バックエンドの RaceController と同じロール要件を画面側にも置く -->
+    <ProtectedRoute :required-roles="['admin', 'operator', 'viewer']">
       <RaceListPage />
     </ProtectedRoute>
   </PageContainer>

@@ -17,5 +17,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "../../shared/src"]
+  "include": ["src", "e2e", "../../shared/src"]
 }
