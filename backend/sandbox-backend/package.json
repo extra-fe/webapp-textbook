@@ -20,6 +20,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "start:otel": "node --require ts-node/register --require ./src/otel/instrumentation.ts -r tsconfig-paths/register src/main.ts",
     "check:auth-guards": "ts-node -r tsconfig-paths/register scripts/check-auth-guards.ts",
+    "check:audit-columns": "ts-node -r tsconfig-paths/register scripts/check-audit-columns.ts",
+    "check:db-schema": "pnpm run gen:db-schema && git diff --exit-code -- ../../docs/db-schema.md",
     "gen:db-schema": "ts-node -r tsconfig-paths/register scripts/gen-db-schema.ts",
     "db:seed": "ts-node -r tsconfig-paths/register prisma/seed.ts"
   },
