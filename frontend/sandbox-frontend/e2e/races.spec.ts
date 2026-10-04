@@ -106,7 +106,9 @@ test.describe("レース一覧画面", () => {
 
     const panel = page.getByRole("region", { name: "処理結果" });
     await expect(panel.getByRole("heading")).toContainText("日本ダービー");
-    await expect(panel.getByText("1. ディープインパクト（武豊）")).toBeVisible();
+    await expect(
+      panel.getByText("1. ディープインパクト（武豊）"),
+    ).toBeVisible();
   });
 
   test("一覧取得が失敗するとエラーメッセージが表示されること", async ({

@@ -46,7 +46,9 @@ test.describe("RBAC: ProtectedRoute のロール判定", () => {
 
       await page.goto("/races");
 
-      await expect(page.getByRole("button", { name: /春の大賞/ })).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: /春の大賞/ }),
+      ).toBeVisible();
       await expect(page.getByText("403 Forbidden")).toBeHidden();
     });
   }

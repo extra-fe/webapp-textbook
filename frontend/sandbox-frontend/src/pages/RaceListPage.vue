@@ -74,6 +74,13 @@ const fetchRace = async (id: string) => {
     // races 配列内の該当エントリを最新の詳細データで更新する
     races.value = races.value.map((r) => (r.id === id ? detail : r));
     // selectedRace は computed が自動的に最新の races から再計算する
+  } catch (err: unknown) {
+    // catch がないと、async なイベントハンドラの reject が
+    // app.config.errorHandler まで届いてエラーページへ飛ばされる（3.12節）。
+    // 一覧は生きているので、ここはトーストで知らせて画面に留まる。
+    if (err instanceof ConflictHandledError) return;
+    if (err instanceof ApiError) showError(toUserMessage(err));
+    else console.error(err);
   } finally {
     detailLoading.value = false;
   }
@@ -106,16 +113,26 @@ onMounted(() => {
 // フォームは YYYY-MM-DD を返す。API は ISO8601 を要求するので、
 // API を呼ぶ側であるこちらで変換する。
 const onSubmit = async (values: CreateRaceFormValues) => {
-  await callApi("/api/races", {
-    method: "POST",
-    body: {
-      date: `${values.date}T00:00:00.000Z`,
-      name: values.name,
-      venue: values.venue,
-      entries: [],
-    },
-  });
-  await fetchRaces();
+  try {
+    await callApi("/api/races", {
+      method: "POST",
+      body: {
+        date: `${values.date}T00:00:00.000Z`,
+        name: values.name,
+        venue: values.venue,
+        entries: [],
+      },
+    });
+    await fetchRaces();
+  } catch (err: unknown) {
+    // ここも catch が要る。RaceCreateForm は void submit() で呼ぶので、
+    // 投げっぱなしだと unhandledrejection がエラーページへの遷移を試み、
+    // 3.10節の離脱ガードがそれを捕まえて「入力内容が保存されていません」を
+    // 開いてしまう。権限エラーとは無関係なダイアログが出る。
+    if (err instanceof ConflictHandledError) return;
+    if (err instanceof ApiError) showError(toUserMessage(err));
+    else console.error(err);
+  }
 };
 
 // 一覧が返る前に画面を離れたら通信を打ち切る
