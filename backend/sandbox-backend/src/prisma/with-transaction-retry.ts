@@ -23,7 +23,7 @@ export async function withTransactionRetry<T>(
         error.code === 'P2034';
       if (!isRetryable || attempt >= maxRetries) throw error;
       logger.warn(
-        `[deadlock] P2034 detected, retrying (${attempt}/${maxRetries})`,
+        `[deadlock] P2034 detected, retrying (attempt ${attempt}/${maxRetries})`,
       );
     }
   }
