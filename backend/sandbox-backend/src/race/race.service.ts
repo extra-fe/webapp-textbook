@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { ErrorCode } from '../common/errors/error-code.enum';
 import { PrismaService } from '../prisma/prisma.service';
+import { withTransactionRetry } from '../prisma/with-transaction-retry';
 import { CreateRaceDto } from './dto/create-race.dto';
 import { UpdateRaceDto } from './dto/update-race.dto';
 
@@ -57,27 +58,33 @@ export class RaceService {
     updateRaceDto: UpdateRaceDto,
     operatorId: string,
   ) {
-    return this.prisma.$transaction(async (tx) => {
-      // version 一致時のみ更新。同時更新が起きると片方は count === 0 になる
-      const result = await tx.race.updateMany({
-        where: { id, version },
-        data: {
-          ...updateRaceDto,
-          updatedBy: operatorId,
-          version: { increment: 1 },
-        },
-      });
+    // 更新が競合してデッドロック（P2034）になっても最大3回リトライする
+    return withTransactionRetry(() =>
+      this.prisma.$transaction(async (tx) => {
+        // version 一致時のみ更新。同時更新が起きると片方は count === 0 になる
+        const result = await tx.race.updateMany({
+          where: { id, version },
+          data: {
+            ...updateRaceDto,
+            updatedBy: operatorId,
+            version: { increment: 1 },
+          },
+        });
 
-      if (result.count === 0) {
-        const exists = await tx.race.findUnique({ where: { id } });
-        if (!exists) raceNotFound(id);
-        throw new ConflictException(
-          `Race with id ${id} was updated by another request. Reload and retry.`,
-        );
-      }
+        if (result.count === 0) {
+          const exists = await tx.race.findUnique({ where: { id } });
+          if (!exists) raceNotFound(id);
+          throw new ConflictException(
+            `Race with id ${id} was updated by another request. Reload and retry.`,
+          );
+        }
 
-      return tx.race.findUnique({ where: { id }, include: { entries: true } });
-    });
+        return tx.race.findUnique({
+          where: { id },
+          include: { entries: true },
+        });
+      }),
+    );
   }
 
   async remove(id: string) {
