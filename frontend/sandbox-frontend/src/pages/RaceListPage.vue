@@ -12,6 +12,7 @@ import {
   ConflictHandledError,
   useApiCaller,
 } from "../composables/useApiCaller";
+import { formatDate } from "../lib/format";
 import { isCancel } from "../lib/http-client";
 import RaceCreateForm from "./RaceCreateForm.vue";
 
@@ -132,8 +133,9 @@ onUnmounted(() => controller.abort());
         :class="{ 'font-bold': race.id === selectedRaceId }"
         @click="fetchRace(race.id)"
       >
-        v{{ race.version }} {{ race.name }}（{{ race.venue }}／出走
-        {{ race.entries.length }} 頭）
+        v{{ race.version }} {{ race.name }}（{{ formatDate(race.date) }}／{{
+          race.venue
+        }}／出走 {{ race.entries.length }} 頭）
       </button>
       <button
         type="button"
