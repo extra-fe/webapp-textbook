@@ -18,8 +18,11 @@ export class RolesGuard implements CanActivate {
       [context.getHandler(), context.getClass()],
     );
 
-    // @Roles が付いていないハンドラーは素通しする
-    if (!requiredRoles || requiredRoles.length === 0) return true;
+    if (!requiredRoles || requiredRoles.length === 0) {
+      // @Roles の付け忘れを素通しせず拒否する。「認証済みなら誰でも可」の
+      // 意図なら @UseGuards から RolesGuard を外す。
+      throw new ForbiddenException('No roles are specified for this handler');
+    }
 
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const hasRole = requiredRoles.some((role) =>

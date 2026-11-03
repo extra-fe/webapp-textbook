@@ -21,7 +21,6 @@ import {
 import { OperatorId } from '../auth/decorators/operator-id.decorator';
 import { StrictThrottle } from '../common/decorators/strict-throttle.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { ConditionalAuthGuard } from '../auth/guards/conditional-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { CreateRaceDto } from './dto/create-race.dto';
 import { UpdateRaceDto } from './dto/update-race.dto';
@@ -30,7 +29,7 @@ import { RaceService } from './race.service';
 @ApiTags('races')
 @ApiBearerAuth('access-token')
 @Controller('api/races')
-@UseGuards(ConditionalAuthGuard, RolesGuard)
+@UseGuards(RolesGuard)
 export class RaceController {
   constructor(private readonly raceService: RaceService) {}
 

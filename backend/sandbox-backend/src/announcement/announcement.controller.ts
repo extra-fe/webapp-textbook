@@ -17,7 +17,6 @@ import {
 } from '@nestjs/swagger';
 import { AllowAnonymous } from '../auth/decorators/allow-anonymous.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { ConditionalAuthGuard } from '../auth/guards/conditional-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { AnnouncementService } from './announcement.service';
 import { CreateAnnouncementDto } from './dto/create-announcement.dto';
@@ -46,7 +45,7 @@ export class AnnouncementController {
 
   // ここから下は admin 限定
   @Get('api/admin/announcements')
-  @UseGuards(ConditionalAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles('admin')
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'お知らせ全件取得（管理者）' })
@@ -55,7 +54,7 @@ export class AnnouncementController {
   }
 
   @Post('api/admin/announcements')
-  @UseGuards(ConditionalAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles('admin')
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'お知らせ作成（管理者）' })
@@ -64,7 +63,7 @@ export class AnnouncementController {
   }
 
   @Patch('api/admin/announcements/:id')
-  @UseGuards(ConditionalAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles('admin')
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'お知らせ更新（管理者）' })
@@ -74,7 +73,7 @@ export class AnnouncementController {
   }
 
   @Delete('api/admin/announcements/:id')
-  @UseGuards(ConditionalAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles('admin')
   @ApiBearerAuth('access-token')
   @HttpCode(204)

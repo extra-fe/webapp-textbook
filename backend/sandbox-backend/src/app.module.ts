@@ -7,6 +7,7 @@ import { AdminModule } from './admin/admin.module';
 import { AnnouncementModule } from './announcement/announcement.module';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { ConditionalAuthGuard } from './auth/guards/conditional-auth.guard';
 import { HealthController } from './health/health.controller';
 import { PrismaModule } from './prisma/prisma.module';
 import { RaceModule } from './race/race.module';
@@ -45,6 +46,8 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     AppService,
     { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
     { provide: APP_GUARD, useClass: AppThrottlerGuard },
+    // 認証は既定で全エンドポイントに掛ける。外すときは @AllowAnonymous() を明示する
+    { provide: APP_GUARD, useClass: ConditionalAuthGuard },
   ],
 })
 export class AppModule implements NestModule {
