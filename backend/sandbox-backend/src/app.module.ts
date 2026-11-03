@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
+import { AdminModule } from './admin/admin.module';
 import { AnnouncementModule } from './announcement/announcement.module';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -37,6 +38,7 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     AuthModule,
     RaceModule,
     AnnouncementModule,
+    AdminModule,
   ],
   controllers: [AppController, HealthController],
   providers: [
