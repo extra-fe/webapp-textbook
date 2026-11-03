@@ -3703,6 +3703,58 @@ async function main() {
 
     await seedKeycloakTestUser(client);
 
+    console.log('\n── お知らせ ─────────────────────────────');
+    const announcements = [
+      {
+        title: 'システムメンテナンスのお知らせ',
+        body: '2026年6月10日（火）2:00〜4:00 にシステムメンテナンスを実施します。',
+        level: 'warning',
+        // 掲載期間は実行時刻からの相対で入れる。固定日付にすると時間が経った
+        // あとに seed しても期間外になり、/api/guest/announcements が空になる。
+        startsDaysFromNow: -1,
+        endsDaysFromNow: 7,
+      },
+      {
+        title: '新機能リリースのお知らせ',
+        body: 'ログイン画面へのお知らせ表示機能をリリースしました。',
+        level: 'info',
+        startsDaysFromNow: -3,
+        endsDaysFromNow: 30,
+      },
+      {
+        // 掲載期間が過ぎたお知らせ。findActive の期間フィルタが効いていることを
+        // 確認するために入れてある（/api/guest/announcements に出てはいけない）。
+        title: '【掲載終了】年末年始の営業時間について',
+        body: 'この行は掲載期間が過ぎているため、お知らせ一覧に出てはいけません。',
+        level: 'info',
+        startsDaysFromNow: -30,
+        endsDaysFromNow: -10,
+      },
+    ];
+    for (const a of announcements) {
+      // announcements にユニーク制約は無く PK は gen_random_uuid() なので
+      // ON CONFLICT DO NOTHING では重複を防げない。seed が持つタイトルの行を
+      // 消してから入れ直すことで、何度実行しても同じ結果になるようにする。
+      await client.query(`DELETE FROM announcements WHERE title = $1`, [
+        a.title,
+      ]);
+      await client.query(
+        `INSERT INTO announcements (id, title, body, level, "startsAt", "endsAt", "createdAt", "updatedAt")
+         VALUES (gen_random_uuid(), $1, $2, $3,
+                 NOW() + ($4 || ' days')::interval,
+                 NOW() + ($5 || ' days')::interval,
+                 NOW(), NOW())`,
+        [
+          a.title,
+          a.body,
+          a.level,
+          String(a.startsDaysFromNow),
+          String(a.endsDaysFromNow),
+        ],
+      );
+      console.log(`🌱 ${a.level.toUpperCase()}: ${a.title}`);
+    }
+
     console.log('\n── レース ───────────────────────────────');
     for (const race of RACES) {
       await seedRace(client, MOCK_USER_ID, race);
