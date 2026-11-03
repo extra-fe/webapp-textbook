@@ -1,0 +1,9 @@
+{
+  "maintenance": {
+    "contact": "お問い合わせ",
+    "heading": "メンテナンス中",
+    "message": "現在システムのメンテナンスを行っています。ご不便をおかけして申し訳ございません。",
+    "scheduledEnd": "復旧予定時刻",
+    "scheduledEndNotSet": "未定"
+  }
+}
