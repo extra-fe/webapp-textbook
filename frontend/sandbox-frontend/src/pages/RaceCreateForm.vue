@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import {
   CreateRaceFormSchema,
@@ -10,14 +10,15 @@ import {
 import ConfirmDialog from "../components/ConfirmDialog.vue";
 import { useConfirmDialog } from "../composables/useConfirmDialog";
 import { useSubmit } from "../composables/useSubmit";
+import { useUnsavedChangesGuard } from "../composables/useUnsavedChangesGuard";
 
 // API 呼び出しは親（RaceListPage）が持ち、このコンポーネントは検証と
-// 送信の制御だけを受け持つ。
+// 送信の制御だけを受け持つ。渡す側は3.4節で見る。
 const props = defineProps<{
   onSubmit: (values: CreateRaceFormValues) => Promise<void>;
 }>();
 
-const { handleSubmit, errors, defineField, resetForm } =
+const { handleSubmit, errors, defineField, resetForm, meta } =
   useForm<CreateRaceFormValues>({
     validationSchema: toTypedSchema(CreateRaceFormSchema),
     initialValues: { date: "", name: "", venue: "" },
@@ -30,6 +31,29 @@ const [venue, venueAttrs] = defineField("venue");
 const { t } = useI18n();
 const { isOpen, open, close } = useConfirmDialog();
 const pendingValues = ref<CreateRaceFormValues | null>(null);
+
+// 離脱確認。ConfirmDialog は props で開閉するので、
+// Promise の resolve を保持して「確定/キャンセル」で解決する
+const leaveDialog = useConfirmDialog();
+let resolveLeave: ((ok: boolean) => void) | null = null;
+
+const confirmLeave = () =>
+  new Promise<boolean>((resolve) => {
+    resolveLeave = resolve;
+    leaveDialog.open();
+  });
+
+const settleLeave = (ok: boolean) => {
+  leaveDialog.close();
+  resolveLeave?.(ok);
+  resolveLeave = null;
+};
+
+// 入力途中のまま離脱しようとしたら引き止める
+useUnsavedChangesGuard(
+  computed(() => meta.value.dirty),
+  confirmLeave,
+);
 
 // フォームの送信では「開く」だけ。検証はここで済んでいる
 const onFormSubmit = handleSubmit((values) => {
@@ -123,5 +147,15 @@ const handleConfirm = () => {
     :is-loading="isSubmitting"
     @confirm="handleConfirm"
     @cancel="close"
+  />
+
+  <ConfirmDialog
+    :is-open="leaveDialog.isOpen.value"
+    :title="t('race.create.leaveDialog.title')"
+    :message="t('race.create.leaveDialog.message')"
+    :confirm-label="t('race.create.leaveDialog.confirmLabel')"
+    :cancel-label="t('race.create.leaveDialog.cancelLabel')"
+    @confirm="settleLeave(true)"
+    @cancel="settleLeave(false)"
   />
 </template>

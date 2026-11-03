@@ -10,6 +10,12 @@
       "confirmDialog": {
         "title": "Confirm race creation",
         "message": "Create this race. Are you sure?"
+      },
+      "leaveDialog": {
+        "title": "You have unsaved changes",
+        "message": "If you leave now, your input will be lost. Leave anyway?",
+        "confirmLabel": "Leave",
+        "cancelLabel": "Stay"
       }
     },
     "detail": {
