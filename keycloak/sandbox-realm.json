@@ -1,0 +1,57 @@
+{
+  "realm": "sandbox",
+  "enabled": true,
+  "roles": {
+    "realm": [
+      { "name": "admin", "description": "全操作が可能" },
+      { "name": "operator", "description": "レースの作成・更新が可能" },
+      { "name": "viewer", "description": "閲覧のみ" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "sandbox-frontend",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "redirectUris": ["http://localhost:5173/*"],
+      "webOrigins": ["http://localhost:5173"],
+      "protocolMappers": [
+        {
+          "name": "sandbox-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "sandbox-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "sandbox-api",
+      "enabled": true,
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false
+    }
+  ],
+  "users": [
+    {
+      "username": "testuser",
+      "email": "testuser@example.com",
+      "firstName": "Test",
+      "lastName": "User",
+      "enabled": true,
+      "credentials": [
+        { "type": "password", "value": "password", "temporary": false }
+      ],
+      "realmRoles": ["default-roles-sandbox", "admin"]
+    }
+  ]
+}
