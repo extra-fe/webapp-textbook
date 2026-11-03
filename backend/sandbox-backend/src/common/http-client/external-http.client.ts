@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { Injectable, Logger } from '@nestjs/common';
 import {
   CircuitBreakerService,
@@ -7,6 +8,11 @@ import {
 export interface ExternalRequestOptions {
   headers?: Record<string, string>;
   timeoutMs?: number;
+  /**
+   * 明示的に指定する Idempotency-Key。省略時は UUID v4 を自動生成する。
+   * 同一操作をリトライする場合は同じキーを渡すこと。
+   */
+  idempotencyKey?: string;
   /**
    * サーキットブレーカーのキー。同じキーを使う呼び出しが共通のブレーカーを
    * 共有する。省略時はサーキットブレーカーを使わない。
@@ -71,13 +77,23 @@ export class ExternalHttpClient {
     body?: unknown,
     opts?: ExternalRequestOptions,
   ): Promise<ExternalResponse<T>> {
+    // GET / HEAD はもともと冪等なので Idempotency-Key は付けない
+    const isMutating = method !== 'GET' && method !== 'HEAD';
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
+      ...(isMutating
+        ? { 'Idempotency-Key': opts?.idempotencyKey ?? randomUUID() }
+        : {}),
       ...opts?.headers,
     };
     const timeoutMs = opts?.timeoutMs ?? 10_000;
 
-    this.logger.log(`[request] ${method} ${url}`);
+    this.logger.log(
+      `[request] ${method} ${url}` +
+        (headers['Idempotency-Key']
+          ? ` idempotencyKey=${headers['Idempotency-Key']}`
+          : ''),
+    );
 
     const doFetch = () =>
       this.doFetch<T>(method, url, headers, body, timeoutMs);
