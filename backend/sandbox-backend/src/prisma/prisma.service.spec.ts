@@ -14,6 +14,7 @@ jest.mock('../generated/prisma/client', () => {
       $connect: jest.Mock;
       $disconnect: jest.Mock;
       $queryRaw: jest.Mock;
+      $on: jest.Mock;
     },
     options: Record<string, unknown>,
   ) {
@@ -21,6 +22,8 @@ jest.mock('../generated/prisma/client', () => {
     this.$connect = jest.fn().mockResolvedValue(undefined);
     this.$disconnect = jest.fn().mockResolvedValue(undefined);
     this.$queryRaw = jest.fn().mockResolvedValue([{ '?column?': 1 }]);
+    // 6.3節でコンストラクタが $on('query') を登録するので、モックにも要る
+    this.$on = jest.fn();
   });
   return {
     PrismaClient: MockPrismaClient,
