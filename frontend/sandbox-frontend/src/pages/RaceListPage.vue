@@ -21,6 +21,9 @@ const { t } = useI18n();
 // t() は setup の中でしか呼べないので、ロケールから引く版は
 // 純粋な関数として切り出せずここに置く
 const toUserMessage = (err: ApiError): string => {
+  // ステータスより先に code を見る。422 は「リソース未存在」と
+  // 「バリデーションエラー」の両方に使われるため区別できない
+  if (err.code === "NOT_FOUND") return t("common.error.NOT_FOUND");
   switch (err.status) {
     case 400:
       return t("common.error.BAD_REQUEST");
@@ -28,10 +31,12 @@ const toUserMessage = (err: ApiError): string => {
       return t("common.error.UNAUTHORIZED");
     case 403:
       return t("common.error.FORBIDDEN");
-    case 404:
-      return t("common.error.NOT_FOUND");
     case 409:
       return t("common.error.CONFLICT");
+    case 422:
+      return t("common.error.BAD_REQUEST");
+    case 429:
+      return t("common.error.TOO_MANY_REQUESTS");
     default:
       return err.status >= 500
         ? t("common.error.SERVER_ERROR")
