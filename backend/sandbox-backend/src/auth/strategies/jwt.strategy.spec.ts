@@ -18,6 +18,7 @@ jest.mock('jwks-rsa', () => ({
   passportJwtSecret: jest.fn(() => jest.fn()),
 }));
 
+import { passportJwtSecret } from 'jwks-rsa';
 import type { IIdpProvider } from '../idp/idp-provider.interface';
 import { JwtStrategy } from './jwt.strategy';
 
@@ -63,5 +64,43 @@ describe('JwtStrategy の検証設定', () => {
     const opts = captureConstructorOpts();
     expect(opts.issuer).toBe('http://localhost:8080/realms/sandbox');
     expect(opts.audience).toBe('sandbox-api');
+  });
+});
+
+describe('JwtStrategy の JWKS 設定', () => {
+  beforeEach(() => {
+    (passportJwtSecret as jest.Mock).mockClear();
+  });
+
+  /** passportJwtSecret() に渡ったオプションオブジェクトを取り出す */
+  const captureJwksOpts = (): Record<string, unknown> => {
+    new JwtStrategy(mockIdp, {} as never);
+    const [opts] = (passportJwtSecret as jest.Mock).mock.calls[0] as [
+      Record<string, unknown>,
+    ];
+    return opts;
+  };
+
+  // 外すと毎リクエストで JWKS を取りに行き、IdP のレート制限に抵触する
+  it('should enable the kid-based LRU cache', () => {
+    expect(captureJwksOpts().cache).toBe(true);
+  });
+
+  // 長すぎると緊急ローテーション時に古い鍵を掴み続ける
+  it('should keep cached keys for 10 minutes', () => {
+    expect(captureJwksOpts().cacheMaxAge).toBe(10 * 60 * 1000);
+  });
+
+  it('should enable rate limiting of JWKS requests', () => {
+    expect(captureJwksOpts().rateLimit).toBe(true);
+  });
+
+  it('should set jwksRequestsPerMinute explicitly', () => {
+    expect(captureJwksOpts().jwksRequestsPerMinute).toBe(10);
+  });
+
+  // ハードコードした URL ではなく IdP プロバイダー越しに取る（1.6節）
+  it('should take jwksUri from IIdpProvider', () => {
+    expect(captureJwksOpts().jwksUri).toBe(mockIdp.getJwksUri());
   });
 });

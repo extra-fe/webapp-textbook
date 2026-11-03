@@ -18,7 +18,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const audience = idp.getAudience();
     super({
       secretOrKeyProvider: passportJwtSecret({
+        cache: true,
+        // kid ベースの LRU キャッシュ。キーローテーション時は新 kid で
+        // キャッシュミスが発生し、JWKS エンドポイントから自動で新鍵を取得する。
+        cacheMaxAge: 10 * 60 * 1000, // 10分（デフォルト値を明示）
+        cacheMaxEntries: 5,
+        rateLimit: true,
+        jwksRequestsPerMinute: 10, // デフォルト値を明示
         jwksUri: idp.getJwksUri(),
+        timeout: 5000,
       }),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       issuer: idp.getIssuer(),
