@@ -61,12 +61,71 @@ describe('ExternalHttpClient', () => {
       );
     });
 
+    it('patch() は PATCH で呼ぶ', async () => {
+      await client.patch(URL_X, {});
+      expect(fetchMock).toHaveBeenCalledWith(
+        URL_X,
+        expect.objectContaining({ method: 'PATCH' }),
+      );
+    });
+
     it('delete() は DELETE で呼ぶ', async () => {
       await client.delete(URL_X);
       expect(fetchMock).toHaveBeenCalledWith(
         URL_X,
         expect.objectContaining({ method: 'DELETE' }),
       );
+    });
+  });
+
+  describe('Idempotency-Key', () => {
+    const keyOf = (): string | undefined => {
+      const call = fetchMock.mock.calls[0] as [string, RequestInit];
+      return (call[1].headers as Record<string, string>)['Idempotency-Key'];
+    };
+
+    it('GET には付けない', async () => {
+      await client.get(URL_X);
+      expect(keyOf()).toBeUndefined();
+    });
+
+    it('POST には付く', async () => {
+      await client.post(URL_X, {});
+      expect(keyOf()).toBeDefined();
+    });
+
+    it('PUT には付く', async () => {
+      await client.put(URL_X, {});
+      expect(keyOf()).toBeDefined();
+    });
+
+    it('PATCH には付く', async () => {
+      await client.patch(URL_X, {});
+      expect(keyOf()).toBeDefined();
+    });
+
+    it('DELETE には付く', async () => {
+      await client.delete(URL_X);
+      expect(keyOf()).toBeDefined();
+    });
+
+    it('明示した idempotencyKey がそのまま使われる', async () => {
+      await client.post(URL_X, {}, { idempotencyKey: 'fixed-key-1' });
+      expect(keyOf()).toBe('fixed-key-1');
+
+      // 同じキーで送り直しても同じ値が飛ぶ。自動生成に任せると毎回変わるので、
+      // 重複排除が成立するのは呼び出し側がキーを保持している場合だけ
+      fetchMock.mockClear();
+      await client.post(URL_X, {}, { idempotencyKey: 'fixed-key-1' });
+      expect(keyOf()).toBe('fixed-key-1');
+    });
+
+    it('指定しなければ毎回別のキーが生成される', async () => {
+      await client.post(URL_X, {});
+      const first = keyOf();
+      fetchMock.mockClear();
+      await client.post(URL_X, {});
+      expect(keyOf()).not.toBe(first);
     });
   });
 
