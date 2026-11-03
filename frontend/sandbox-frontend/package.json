@@ -14,7 +14,8 @@
     "format": "biome format --write src/",
     "lint": "biome check src/",
     "lint:types": "eslint .",
-    "lint:ci": "biome check src/ && eslint ."
+    "lint:ci": "biome check src/ && eslint .",
+    "gen:screen-list": "tsx scripts/gen-screen-list.ts"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
@@ -25,6 +26,7 @@
     "vee-validate": "^4.15.1",
     "vue": "^3.5.43",
     "vue-i18n": "^11.4.17",
+    "vue-router": "^5.4.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {
@@ -37,6 +39,7 @@
     "eslint": "^10.14.0",
     "eslint-plugin-vue": "^10.12.0",
     "jsonc-eslint-parser": "^3.3.0",
+    "tsx": "^4.23.15",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.72.1",
     "vite": "^8.3.1",
