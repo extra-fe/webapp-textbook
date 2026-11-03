@@ -19,7 +19,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { OperatorId } from '../auth/decorators/operator-id.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { ConditionalAuthGuard } from '../auth/guards/conditional-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 import { CreateRaceDto } from './dto/create-race.dto';
 import { UpdateRaceDto } from './dto/update-race.dto';
 import { RaceService } from './race.service';
@@ -27,23 +29,26 @@ import { RaceService } from './race.service';
 @ApiTags('races')
 @ApiBearerAuth('access-token')
 @Controller('api/races')
-@UseGuards(ConditionalAuthGuard) // RolesGuard は 2.6 節で追加する
+@UseGuards(ConditionalAuthGuard, RolesGuard)
 export class RaceController {
   constructor(private readonly raceService: RaceService) {}
 
   @Get()
+  @Roles('admin', 'operator', 'viewer')
   @ApiOperation({ summary: 'レース一覧取得' })
   findAll() {
     return this.raceService.findAll();
   }
 
   @Get(':id')
+  @Roles('admin', 'operator', 'viewer')
   @ApiOperation({ summary: 'レース詳細取得' })
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.raceService.findOne(id);
   }
 
   @Post()
+  @Roles('admin', 'operator')
   @ApiOperation({ summary: 'レース作成' })
   @ApiResponse({
     status: 409,
@@ -57,6 +62,7 @@ export class RaceController {
   }
 
   @Patch(':id')
+  @Roles('admin', 'operator')
   @ApiOperation({ summary: 'レース更新（楽観ロック）' })
   @ApiResponse({ status: 409, description: '他のリクエストが先に更新した' })
   update(
@@ -69,6 +75,7 @@ export class RaceController {
   }
 
   @Delete(':id')
+  @Roles('admin')
   @HttpCode(204)
   @ApiOperation({ summary: 'レース削除' })
   remove(@Param('id', ParseUUIDPipe) id: string) {
