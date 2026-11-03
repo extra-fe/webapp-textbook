@@ -54,6 +54,7 @@ export class PrismaService
       },
     });
 
+    const slowThreshold = env('SLOW_QUERY_THRESHOLD_MS', 1_000);
     // log を動的な配列で組み立てているため、TypeScript は $on の
     // イベント名を never に推論してしまう。ここだけ型を明示する。
     // $on('query') は $connect() より前（コンストラクタ内）で登録する必要がある。
@@ -62,6 +63,14 @@ export class PrismaService
         $on: (event: string, cb: (e: Prisma.QueryEvent) => void) => void;
       }
     ).$on('query', (e) => {
+      // --- スロークエリ検出（6.4節、全環境）---
+      // params は本番ログに機密値を流さないため除外する。
+      if (e.duration >= slowThreshold) {
+        this.logger.warn(
+          `[slow-query] ${e.query} | ${Math.round(e.duration)}ms (threshold=${slowThreshold}ms)`,
+        );
+      }
+
       // 開発時は全クエリを params 付きで出力（N+1 検出）。
       // e.duration は 106.80580000000009 のような浮動小数で来るので丸める。
       if (isDevQueryLog) {
