@@ -2,11 +2,24 @@ import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ZodValidationPipe } from 'nestjs-zod';
+import { resolveCorsConfig } from './common/cors/cors-config';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ZodValidationPipe());
+
+  const corsConfig = resolveCorsConfig(
+    process.env.CORS_ORIGIN,
+    process.env.CORS_METHODS,
+  );
+  if (corsConfig.enabled) {
+    app.enableCors({
+      origin: corsConfig.origin,
+      methods: corsConfig.methods,
+      credentials: true,
+    });
+  }
 
   if (process.env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()

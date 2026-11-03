@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAuth } from "./auth/auth-context";
+import RaceListPage from "./pages/RaceListPage.vue";
 
 const { isAuthenticated, isLoading, user, login, logout } = useAuth();
 </script>
@@ -26,6 +27,8 @@ const { isAuthenticated, isLoading, user, login, logout } = useAuth();
           >
             ログアウト
           </button>
+
+          <RaceListPage />
         </template>
 
         <template v-else>
