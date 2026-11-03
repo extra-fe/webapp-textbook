@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AnnouncementModule } from './announcement/announcement.module';
 import { AppService } from './app.service';
@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { HealthController } from './health/health.controller';
 import { PrismaModule } from './prisma/prisma.module';
 import { RaceModule } from './race/race.module';
+import { AppThrottlerGuard } from './common/guards/throttler.guard';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { resolveThrottlerOptions } from './common/throttle/throttler-options';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
@@ -33,7 +34,7 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
   providers: [
     AppService,
     { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
-    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_GUARD, useClass: AppThrottlerGuard },
   ],
 })
 export class AppModule implements NestModule {
