@@ -1,13 +1,18 @@
 import 'dotenv/config';
+import { LogLevel } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { resolveCorsConfig } from './common/cors/cors-config';
 import { AppModule } from './app.module';
+import { JsonLoggerService } from './common/logger/json-logger.service';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const logLevel = (process.env.LOG_LEVEL ?? 'error') as LogLevel;
+  const app = await NestFactory.create(AppModule, {
+    logger: new JsonLoggerService(logLevel),
+  });
 
   // AppModule.configure() の登録はボディパーサーより後ろに積まれるため、
   // パーサー層で起きたエラーのレスポンスに X-Request-Id が付かない。
