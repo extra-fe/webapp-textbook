@@ -19,6 +19,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { OperatorId } from '../auth/decorators/operator-id.decorator';
+import { StrictThrottle } from '../common/decorators/strict-throttle.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { ConditionalAuthGuard } from '../auth/guards/conditional-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -47,6 +48,7 @@ export class RaceController {
     return this.raceService.findOne(id);
   }
 
+  @StrictThrottle()
   @Post()
   @Roles('admin', 'operator')
   @ApiOperation({ summary: 'レース作成' })
