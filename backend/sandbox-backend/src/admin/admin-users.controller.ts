@@ -2,7 +2,6 @@ import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { ConditionalAuthGuard } from '../auth/guards/conditional-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import type { AuthenticatedUser } from '../auth/types';
 import { AdminUsersService } from './admin-users.service';
@@ -11,7 +10,7 @@ import { UpdateRolesDto } from './dto/update-roles.dto';
 @ApiTags('admin/users')
 @ApiBearerAuth('access-token')
 @Controller('api/admin/users')
-@UseGuards(ConditionalAuthGuard, RolesGuard)
+@UseGuards(RolesGuard)
 @Roles('admin')
 export class AdminUsersController {
   constructor(private readonly service: AdminUsersService) {}
