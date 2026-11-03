@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { HealthController } from './health/health.controller';
 import { PrismaModule } from './prisma/prisma.module';
 import { RaceModule } from './race/race.module';
+import { EnvSource, validateEnv } from './common/env/env-validation';
 import { AppThrottlerGuard } from './common/guards/throttler.guard';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { resolveThrottlerOptions } from './common/throttle/throttler-options';
@@ -20,6 +21,13 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
       envFilePath: '.env',
       // 全モジュールから ConfigService を注入できるようにする
       isGlobal: true,
+      // モジュール初期化時に走らせることで、main.ts を経由しない起動経路
+      // （e2e の Test.createTestingModule や OpenAPI 生成スクリプト）でも
+      // 同じ検証が効く。validate は設定オブジェクトを返す契約なのでそのまま返す。
+      validate: (config: Record<string, unknown>) => {
+        validateEnv(config as EnvSource);
+        return config;
+      },
     }),
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
