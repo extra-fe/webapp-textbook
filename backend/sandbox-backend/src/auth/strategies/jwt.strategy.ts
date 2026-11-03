@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { passportJwtSecret } from 'jwks-rsa';
+import { PrismaService } from '../../prisma/prisma.service';
 import { AuthenticatedUser } from '../types';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private readonly prisma: PrismaService) {
     super({
       secretOrKeyProvider: passportJwtSecret({
         jwksUri: `${process.env.KEYCLOAK_URL}/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/certs`,
@@ -17,9 +18,22 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  validate(payload: Record<string, unknown>): AuthenticatedUser {
+  async validate(payload: Record<string, unknown>): Promise<AuthenticatedUser> {
+    const sub = payload['sub'] as string;
+
+    const user = await this.prisma.user.findUnique({
+      where: { externalId: sub },
+      select: { id: true },
+    });
+
+    // IdP で認証できてもアプリに登録されていなければ利用させない
+    if (!user) {
+      throw new ForbiddenException('ユーザーが登録されていません');
+    }
+
     return {
-      sub: payload['sub'] as string,
+      id: user.id,
+      sub,
       name: payload['name'] as string | undefined,
       email: payload['email'] as string | undefined,
       roles: (payload['realm_access'] as { roles?: string[] })?.roles ?? [],
