@@ -42,8 +42,8 @@ describe('JwtStrategy の検証設定', () => {
   /** super() に渡ったオプションオブジェクトを取り出す */
   const captureConstructorOpts = (): Record<string, unknown> => {
     // TestingModule を通さず直接 new する。validate() を呼ばないので
-    // PrismaService は空オブジェクトで足りる。
-    new JwtStrategy(mockIdp, {} as never);
+    // PrismaService も Cache も空オブジェクトで足りる。
+    new JwtStrategy(mockIdp, {} as never, {} as never);
     const [opts] = mockStrategyConstructor.mock.calls[0] as [
       Record<string, unknown>,
     ];
@@ -74,7 +74,7 @@ describe('JwtStrategy の JWKS 設定', () => {
 
   /** passportJwtSecret() に渡ったオプションオブジェクトを取り出す */
   const captureJwksOpts = (): Record<string, unknown> => {
-    new JwtStrategy(mockIdp, {} as never);
+    new JwtStrategy(mockIdp, {} as never, {} as never);
     const [opts] = (passportJwtSecret as jest.Mock).mock.calls[0] as [
       Record<string, unknown>,
     ];
