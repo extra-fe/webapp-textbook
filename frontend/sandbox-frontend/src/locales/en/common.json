@@ -7,6 +7,7 @@
       "FORBIDDEN": "You do not have permission to perform this operation.",
       "NOT_FOUND": "The requested data was not found.",
       "SERVER_ERROR": "A server error occurred. Please try again later.",
+      "TOO_MANY_REQUESTS": "Too many requests. Please wait a moment and try again.",
       "UNAUTHORIZED": "Authentication is required. Please sign in again.",
       "UNKNOWN": "The operation failed."
     },

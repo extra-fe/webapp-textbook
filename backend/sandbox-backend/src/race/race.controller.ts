@@ -44,6 +44,10 @@ export class RaceController {
   @Get(':id')
   @Roles('admin', 'operator', 'viewer')
   @ApiOperation({ summary: 'レース詳細取得' })
+  @ApiResponse({
+    status: 422,
+    description: '指定IDのレースが存在しない（404は使わない）',
+  })
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.raceService.findOne(id);
   }
