@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
+import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 import {
   CreateRaceFormSchema,
   type CreateRaceFormValues,
 } from "../../../../shared/src/race-validation";
+import ConfirmDialog from "../components/ConfirmDialog.vue";
+import { useConfirmDialog } from "../composables/useConfirmDialog";
 import { useSubmit } from "../composables/useSubmit";
 
 // API 呼び出しは親（RaceListPage）が持ち、このコンポーネントは検証と
-// 送信の制御だけを受け持つ。渡す側は3.4節で見る。
+// 送信の制御だけを受け持つ。
 const props = defineProps<{
   onSubmit: (values: CreateRaceFormValues) => Promise<void>;
 }>();
@@ -23,15 +27,33 @@ const [date, dateAttrs] = defineField("date");
 const [name, nameAttrs] = defineField("name");
 const [venue, venueAttrs] = defineField("venue");
 
+const { t } = useI18n();
+const { isOpen, open, close } = useConfirmDialog();
+const pendingValues = ref<CreateRaceFormValues | null>(null);
+
+// フォームの送信では「開く」だけ。検証はここで済んでいる
+const onFormSubmit = handleSubmit((values) => {
+  pendingValues.value = values;
+  open();
+});
+
+// 実際に送るのは「確定」なので、二重送信ガードもこちらに移す
 const { isSubmitting, submit } = useSubmit(
   async (values: CreateRaceFormValues) => {
-    await props.onSubmit(values);
-    resetForm();
+    try {
+      await props.onSubmit(values);
+      resetForm();
+    } finally {
+      close();
+      pendingValues.value = null;
+    }
   },
 );
 
-// handleSubmit は検証を通ったときだけ submit を呼ぶハンドラを返す
-const onFormSubmit = handleSubmit(submit);
+const handleConfirm = () => {
+  if (!pendingValues.value) return;
+  void submit(pendingValues.value);
+};
 </script>
 
 <template>
@@ -93,4 +115,13 @@ const onFormSubmit = handleSubmit(submit);
       {{ isSubmitting ? "送信中…" : "レースを登録" }}
     </button>
   </form>
+
+  <ConfirmDialog
+    :is-open="isOpen"
+    :title="t('race.create.confirmDialog.title')"
+    :message="t('race.create.confirmDialog.message')"
+    :is-loading="isSubmitting"
+    @confirm="handleConfirm"
+    @cancel="close"
+  />
 </template>

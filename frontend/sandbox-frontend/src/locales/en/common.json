@@ -9,6 +9,10 @@
       "SERVER_ERROR": "A server error occurred. Please try again later.",
       "UNAUTHORIZED": "Authentication is required. Please sign in again.",
       "UNKNOWN": "The operation failed."
+    },
+    "dialog": {
+      "cancel": "Cancel",
+      "confirm": "Confirm"
     }
   }
 }

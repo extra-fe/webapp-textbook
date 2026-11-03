@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import type { Race } from "../../../../shared/src/race-validation";
+import type {
+  CreateRaceFormValues,
+  Race,
+} from "../../../../shared/src/race-validation";
+import ResultPanel from "../components/ResultPanel.vue";
 import { useToast } from "../components/toast-context";
 import {
   ApiError,
@@ -9,6 +13,7 @@ import {
   useApiCaller,
 } from "../composables/useApiCaller";
 import { isCancel } from "../lib/http-client";
+import RaceCreateForm from "./RaceCreateForm.vue";
 
 const { showSuccess, showError } = useToast();
 const { t } = useI18n();
@@ -41,12 +46,32 @@ const { callApi } = useApiCaller({
 });
 
 const races = ref<Race[]>([]);
+const selectedRaceId = ref<string | null>(null);
 const error = ref<string | null>(null);
+const detailLoading = ref(false);
 const controller = new AbortController();
+
+// selectedRace は races から導出する（別の ref を持たない）
+const selectedRace = computed(
+  () => races.value.find((r) => r.id === selectedRaceId.value) ?? null,
+);
 
 async function fetchRaces(signal?: AbortSignal) {
   races.value = await callApi<Race[]>("/api/races", { signal });
 }
+
+const fetchRace = async (id: string) => {
+  selectedRaceId.value = id;
+  detailLoading.value = true;
+  try {
+    const detail = await callApi<Race>(`/api/races/${id}`);
+    // races 配列内の該当エントリを最新の詳細データで更新する
+    races.value = races.value.map((r) => (r.id === id ? detail : r));
+    // selectedRace は computed が自動的に最新の races から再計算する
+  } finally {
+    detailLoading.value = false;
+  }
+};
 
 const renameVenue = async (race: Race) => {
   try {
@@ -72,6 +97,21 @@ onMounted(() => {
   });
 });
 
+// フォームは YYYY-MM-DD を返す。API は ISO8601 を要求するので、
+// API を呼ぶ側であるこちらで変換する。
+const onSubmit = async (values: CreateRaceFormValues) => {
+  await callApi("/api/races", {
+    method: "POST",
+    body: {
+      date: `${values.date}T00:00:00.000Z`,
+      name: values.name,
+      venue: values.venue,
+      entries: [],
+    },
+  });
+  await fetchRaces();
+};
+
 // 一覧が返る前に画面を離れたら通信を打ち切る
 onUnmounted(() => controller.abort());
 </script>
@@ -81,10 +121,15 @@ onUnmounted(() => controller.abort());
 
   <ul v-else class="mt-4 space-y-1 text-sm text-slate-700">
     <li v-for="race in races" :key="race.id" class="flex items-center gap-2">
-      <span>
+      <button
+        type="button"
+        class="text-left underline-offset-2 hover:underline"
+        :class="{ 'font-bold': race.id === selectedRaceId }"
+        @click="fetchRace(race.id)"
+      >
         v{{ race.version }} {{ race.name }}（{{ race.venue }}／出走
         {{ race.entries.length }} 頭）
-      </span>
+      </button>
       <button
         type="button"
         class="rounded border border-slate-300 px-1 text-xs text-slate-600"
@@ -94,4 +139,12 @@ onUnmounted(() => controller.abort());
       </button>
     </li>
   </ul>
+
+  <ResultPanel
+    :race="selectedRace"
+    :loading="detailLoading"
+    @close="selectedRaceId = null"
+  />
+
+  <RaceCreateForm :on-submit="onSubmit" />
 </template>
