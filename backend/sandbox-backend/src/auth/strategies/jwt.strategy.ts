@@ -1,28 +1,39 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { passportJwtSecret } from 'jwks-rsa';
 import { PrismaService } from '../../prisma/prisma.service';
+import {
+  IDP_PROVIDER_TOKEN,
+  type IIdpProvider,
+} from '../idp/idp-provider.interface';
 import { AuthenticatedUser } from '../types';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly prisma: PrismaService) {
+  constructor(
+    @Inject(IDP_PROVIDER_TOKEN) private readonly idp: IIdpProvider,
+    private readonly prisma: PrismaService,
+  ) {
+    const audience = idp.getAudience();
     super({
       secretOrKeyProvider: passportJwtSecret({
-        jwksUri: `${process.env.KEYCLOAK_URL}/realms/${process.env.KEYCLOAK_REALM}/protocol/openid-connect/certs`,
+        jwksUri: idp.getJwksUri(),
       }),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      issuer: `${process.env.KEYCLOAK_URL}/realms/${process.env.KEYCLOAK_REALM}`,
+      issuer: idp.getIssuer(),
+      // audience は未設定なら渡さない（渡すと必ず検証される）
+      ...(audience ? { audience } : {}),
       algorithms: ['RS256'],
     });
   }
 
   async validate(payload: Record<string, unknown>): Promise<AuthenticatedUser> {
-    const sub = payload['sub'] as string;
+    // IdP 固有のクレーム解釈はプロバイダーに任せる
+    const claims = this.idp.mapClaims(payload);
 
     const user = await this.prisma.user.findUnique({
-      where: { externalId: sub },
+      where: { externalId: claims.sub },
       select: { id: true, roles: { select: { role: true } } },
     });
 
@@ -33,9 +44,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     return {
       id: user.id,
-      sub,
-      name: payload['name'] as string | undefined,
-      email: payload['email'] as string | undefined,
+      sub: claims.sub,
+      name: claims.name,
+      email: claims.email,
       // JWT のロールは発行時点のスナップショットなので使わない。
       // DB を見ることで、ロール変更が次のリクエストから即座に効く。
       roles: user.roles.map((r) => r.role),
