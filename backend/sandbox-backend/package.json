@@ -25,6 +25,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "db:seed": "ts-node -r tsconfig-paths/register prisma/seed.ts",
+    "check:audit-columns": "ts-node -r tsconfig-paths/register scripts/check-audit-columns.ts",
     "start:otel": "node --require ts-node/register --require ./src/otel/instrumentation.ts -r tsconfig-paths/register src/main.ts"
   },
   "dependencies": {
