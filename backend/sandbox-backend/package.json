@@ -97,7 +97,13 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.(t|j)s",
+      "!**/*.module.ts",
+      "!main.ts",
+      "!**/*.dto.ts",
+      "!**/*.spec.ts",
+      "!generated/**",
+      "!otel/**"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
@@ -107,6 +113,14 @@
       "^zod/(.*)$": "<rootDir>/../node_modules/zod/$1",
       "^nestjs-zod$": "<rootDir>/../node_modules/nestjs-zod",
       "^nestjs-zod/(.*)$": "<rootDir>/../node_modules/nestjs-zod/$1"
+    },
+    "coverageThreshold": {
+      "global": {
+        "statements": 62,
+        "branches": 50,
+        "functions": 54,
+        "lines": 63
+      }
     }
   }
 }
