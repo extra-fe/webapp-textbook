@@ -28,7 +28,7 @@ export default defineConfig({
       include: ["src/**/*.{ts,vue}"],
       exclude: ["src/main.ts", "src/test/**", "src/mocks/**", "**/*.d.ts"],
       // 実測の少し下に置き、テストを足したら引き上げる（ratchet 運用）
-      thresholds: { statements: 69, branches: 56, functions: 60, lines: 72 },
+      thresholds: { statements: 71, branches: 57, functions: 61, lines: 74 },
     },
   },
 });
