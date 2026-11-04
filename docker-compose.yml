@@ -40,6 +40,11 @@ services:
   k6:
     image: grafana/k6:2.2.0
     container_name: k6-local
+    # ROPG の IDP_* など、下の environment に無いものはここから読む。
+    # ファイルが無くても起動する（required: false）。
+    env_file:
+      - path: ./tests/load/.env
+        required: false
     environment:
       # コンテナから見たホストのバックエンド。
       # localhost だと k6 コンテナ自身を指してしまう。
