@@ -74,6 +74,10 @@ const fetchRace = async (id: string) => {
     // races 配列内の該当エントリを最新の詳細データで更新する
     races.value = races.value.map((r) => (r.id === id ? detail : r));
     // selectedRace は computed が自動的に最新の races から再計算する
+  } catch (err: unknown) {
+    if (err instanceof ConflictHandledError) return;
+    if (err instanceof ApiError) showError(toUserMessage(err));
+    else console.error(err);
   } finally {
     detailLoading.value = false;
   }
@@ -106,16 +110,22 @@ onMounted(() => {
 // フォームは YYYY-MM-DD を返す。API は ISO8601 を要求するので、
 // API を呼ぶ側であるこちらで変換する。
 const onSubmit = async (values: CreateRaceFormValues) => {
-  await callApi("/api/races", {
-    method: "POST",
-    body: {
-      date: `${values.date}T00:00:00.000Z`,
-      name: values.name,
-      venue: values.venue,
-      entries: [],
-    },
-  });
-  await fetchRaces();
+  try {
+    await callApi("/api/races", {
+      method: "POST",
+      body: {
+        date: `${values.date}T00:00:00.000Z`,
+        name: values.name,
+        venue: values.venue,
+        entries: [],
+      },
+    });
+    await fetchRaces();
+  } catch (err: unknown) {
+    if (err instanceof ConflictHandledError) return;
+    if (err instanceof ApiError) showError(toUserMessage(err));
+    else console.error(err);
+  }
 };
 
 // 一覧が返る前に画面を離れたら通信を打ち切る
