@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 import "./style.css";
 import App from "./App.vue";
-import { keycloakAuth } from "./auth/keycloak/keycloak-adapter";
+import { authAdapter } from "./auth/auth-adapter";
 import { toastPlugin } from "./components/toast-plugin";
 import { i18n } from "./i18n";
 import { installGlobalErrorHandling } from "./lib/global-error";
@@ -16,7 +16,7 @@ if (isMaintenanceMode() && !isMaintenanceBypassed()) {
   const app = createApp(App)
     .use(i18n)
     .use(toastPlugin)
-    .use(keycloakAuth)
+    .use(authAdapter)
     .use(router);
   installGlobalErrorHandling(app, router);
   app.mount("#app");
