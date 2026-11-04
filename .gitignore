@@ -1,0 +1,2 @@
+# 負荷テストのローカル設定（7.9節）。IDP_CLIENT_SECRET とパスワードが入る
+tests/load/.env
