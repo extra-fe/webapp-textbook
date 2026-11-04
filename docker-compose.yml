@@ -35,6 +35,27 @@ services:
     profiles:
       - otel
 
+  # 負荷テスト（7.9・7.10節）。既定では起動しない。
+  #   docker compose --profile load run --rm k6 run /scripts/scenarios/smoke.js
+  k6:
+    image: grafana/k6:2.2.0
+    container_name: k6-local
+    environment:
+      # コンテナから見たホストのバックエンド。
+      # localhost だと k6 コンテナ自身を指してしまう。
+      BASE_URL: ${BASE_URL:-http://host.docker.internal:3000}
+      SKIP_AUTH: ${SKIP_AUTH:-true}
+      # 本番ガードの解除。ここで受け取らないと、シェルで設定しても
+      # コンテナの中に届かない。
+      ALLOW_PROD: ${ALLOW_PROD:-}
+    extra_hosts:
+      # Docker Desktop 以外（Linux の docker engine）では自動解決されないため明示する
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./tests/load:/scripts:ro
+    profiles:
+      - load
+
 volumes:
   pg-local-data:
   keycloak-data:
