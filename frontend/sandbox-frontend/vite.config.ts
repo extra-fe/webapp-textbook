@@ -22,5 +22,13 @@ export default defineConfig({
     // msw のハンドラーは実装と同じ `${VITE_API_BASE_URL}${path}` で URL を
     // 組み立てる。.env は .gitignore 対象で CI に無いので、ここで固定する。
     env: { VITE_API_BASE_URL: "http://localhost:3000" },
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "lcov"],
+      include: ["src/**/*.{ts,vue}"],
+      exclude: ["src/main.ts", "src/test/**", "src/mocks/**", "**/*.d.ts"],
+      // 実測の少し下に置き、テストを足したら引き上げる（ratchet 運用）
+      thresholds: { statements: 69, branches: 56, functions: 60, lines: 72 },
+    },
   },
 });

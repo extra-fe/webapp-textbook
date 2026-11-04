@@ -5,7 +5,7 @@ import tseslint from "typescript-eslint";
 import { withVueTs, vueTsConfigs } from "@vue/eslint-config-typescript";
 
 export default withVueTs(
-  { ignores: ["dist", "scripts"] },
+  { ignores: ["dist", "scripts", "coverage"] },
   pluginVue.configs["flat/essential"],
   vueTsConfigs.recommendedTypeChecked,
   {
