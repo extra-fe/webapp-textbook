@@ -48,7 +48,8 @@
     },
     {
       "includes": [
-        "**/lib/maintenance.ts"
+        "**/lib/maintenance.ts",
+        "**/test/maintenance.test.ts"
       ],
       "linter": {
         "rules": {

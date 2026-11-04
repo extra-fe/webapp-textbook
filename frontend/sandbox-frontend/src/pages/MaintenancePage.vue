@@ -3,13 +3,16 @@ import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 
-const scheduledEnd = import.meta.env.VITE_MAINTENANCE_SCHEDULED_END;
+// .env.example は空で配るので ?? ではなく || を使う。
+// ?? だと空文字が「設定済み」と見なされ、未設定時の表示に落ちない。
+const scheduledEnd =
+  import.meta.env.VITE_MAINTENANCE_SCHEDULED_END || undefined;
 
 // メールアドレスは翻訳対象ではないので、ロケールファイルには置かない。
 // vue-i18n はメッセージ中の "@" を linked message の記法として解釈するため、
 // エスケープせずに置くとメッセージのコンパイルが失敗し、この画面が真っ白になる。
 const contactEmail =
-  import.meta.env.VITE_SUPPORT_EMAIL ?? "support@example.com";
+  import.meta.env.VITE_SUPPORT_EMAIL || "support@example.com";
 </script>
 
 <template>
