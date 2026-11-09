@@ -77,74 +77,75 @@ git switch main        # 最新（上巻7.10節の終わり）に戻る
 - `v1-` が上巻、`v2-` が下巻（2027年5月予定）です
 - 節番号は2桁にそろえています。本文の「3.5節」はタグの `v1-3.05` にあたります
 - `git tag -l 'v1-3.*'` で章ごとに絞れます
+- **表のタグ名はコミットへのリンクです。** 押すと、その節で何を足したかが差分で読めます
 - 新しく置くファイルが無い節（2.2・2.4・3.3・3.4・3.13・5.1・6.1・6.5・6.7・7.1）は、
   直前のコミットに同じタグを重ねて打っています
 
 | タグ | 節 | |
 |---|---|---|
-| `v1-1.01` | 1.1 | 何を作るかと、なぜこの組み合わせかを決める（Vue / NestJS / PostgreSQL） |
-| `v1-1.02` | 1.2 | 開発環境をコマンド1つで立ち上げる（Docker Compose） |
-| `v1-1.03` | 1.3 | 誰が立てても同じ認証サーバーになるようにする（Keycloak） |
-| `v1-1.04` | 1.4 | 画面を足していけるフロントエンドの土台を作る（Vue） |
-| `v1-1.05` | 1.5 | APIを足していけるバックエンドの土台を作る（NestJS / Prisma） |
-| `v1-1.06` | 1.6 | ログインを実装したうえで、開発用にスキップも可能にする（OIDC / PKCE） |
-| `v1-1.07` | 1.7 | APIサーバーが生きているかを外から確かめる（ヘルスチェック） |
-| `v1-2.01` | 2.1 | テーブルを決めてマイグレーションで作る（Prisma マイグレーション） |
-| `v1-2.02` | 2.2 | 主キーにUUIDを選び、v4とv7を使い分ける |
-| `v1-2.03` | 2.3 | エンドポイントをSwaggerから叩けるようにする |
-| `v1-2.04` | 2.4 | 物理削除か論理削除かを決める |
-| `v1-2.05` | 2.5 | フロントエンドからAPIを呼ぶ（axios / CORS） |
-| `v1-2.06` | 2.6 | APIの側でロールごとに操作できる範囲を分ける（RBAC） |
-| `v1-2.07` | 2.7 | IdPを差し替えられるようにしておく |
-| `v1-3.01` | 3.1 | 書き間違いを人ではなく道具に見つけさせる（静的解析：ESLint / Biome） |
-| `v1-3.02` | 3.2 | ボタンの二度押しで二重に登録させない（二重送信ガード） |
-| `v1-3.03` | 3.3 | 画面で同じデータを2か所に保持しない（computed） |
-| `v1-3.04` | 3.4 | 値を変えたのに画面が変わらないのを防ぐ（リアクティビティ） |
-| `v1-3.05` | 3.5 | アクセストークンの取り直しを1回にまとめる（single-flight） |
-| `v1-3.06` | 3.6 | 更新の衝突を検出し、最新を取り直す（楽観ロックの409） |
-| `v1-3.07` | 3.7 | 認証を待たずに取れるデータから表示する（ローディング設計） |
-| `v1-3.08` | 3.8 | 操作の確認を挟み、結果の置き場所を先に確保する（確認ダイアログ） |
-| `v1-3.09` | 3.9 | 画面を分け、「戻る」で詰まらない遷移にする（Vue Router） |
-| `v1-3.10` | 3.10 | 打ちかけの入力を失わせない（離脱ガード） |
-| `v1-3.11` | 3.11 | デプロイせずにメンテナンス表示へ切り替える（メンテナンスモード） |
-| `v1-3.12` | 3.12 | エラーを取りこぼして白い画面にしない（エラーバウンダリ） |
-| `v1-3.13` | 3.13 | TanStack Query・VueUseを入れる段階かを見極める |
-| `v1-4.01` | 4.1 | 1件のリクエストを最後まで追えるようにする（OpenTelemetry / トレースID） |
-| `v1-4.02` | 4.2 | ログをJSONで出してリクエストIDで追えるようにする（構造化ログ） |
-| `v1-4.03` | 4.3 | 弾かれたリクエストも取りこぼさずログに残す（インターセプター） |
-| `v1-4.04` | 4.4 | 同じ相手からの連打を一定回数で止める（レート制限） |
-| `v1-4.05` | 4.5 | リクエストヘッダを書き換えてもレート制限を回避させない（trust proxy） |
-| `v1-4.06` | 4.6 | 停止時に処理中のリクエストを捨てない（グレースフルシャットダウン） |
-| `v1-4.07` | 4.7 | DB接続を使い回し、つながらないときはやり直す（コネクションプール） |
-| `v1-4.08` | 4.8 | 応答しない外部APIを待ち続けない（タイムアウト） |
-| `v1-4.09` | 4.9 | 設定が足りないまま起動させない（環境変数の検証） |
-| `v1-4.10` | 4.10 | 拾い損なった非同期エラーで黙って停止しない（unhandledRejection） |
-| `v1-4.11` | 4.11 | リトライしても二重に処理されないようにする（冪等性） |
-| `v1-4.12` | 4.12 | どのAPIも同じ形でエラーを返す（例外フィルタ） |
-| `v1-5.01` | 5.1 | 1つ破られても止まらないように層を重ねる（多層防御） |
-| `v1-5.02` | 5.2 | 安全な認可フローしか使えないことを確かめる（認可コードフロー / PKCE） |
-| `v1-5.03` | 5.3 | 鍵が入れ替わっても落ちないようにする（JWKS / 鍵ローテーション） |
-| `v1-5.04` | 5.4 | 他人のIDを入れても見せない（IDOR） |
-| `v1-5.05` | 5.5 | 同じ利用者のロール照会が重なってもDBは1回だけ引く（ロールキャッシュ） |
-| `v1-5.06` | 5.6 | ブラウザ側の防御を効かせ、素性を隠す（Helmet / セキュリティヘッダ） |
-| `v1-5.07` | 5.7 | ガードとロールの付け忘れが起きない形にする（フェイルクローズ） |
-| `v1-6.01` | 6.1 | スキーマの変更を開発と本番で同じ形に残す（Prisma マイグレーション） |
-| `v1-6.02` | 6.2 | 命名と型の規約を決め、機械で守らせる（スキーマ規約） |
-| `v1-6.03` | 6.3 | 発行SQLを見えるようにしてN+1に気付く |
-| `v1-6.04` | 6.4 | 遅いクエリとデッドロックをログに残す |
-| `v1-6.05` | 6.5 | 同時更新で後の更新が負けることを確かめる（楽観ロック） |
-| `v1-6.06` | 6.6 | 日時をUTCで持ち、表示だけ現地時刻にする（タイムゾーン） |
-| `v1-6.07` | 6.7 | ブラウザが見たものを持ち帰る（開発者ツール / HAR） |
-| `v1-7.01` | 7.1 | どのテストで何を守るかを決める（テストピラミッド） |
-| `v1-7.02` | 7.2 | バックエンドのロジックをDBなしで確かめる（ユニットテスト / Jest） |
-| `v1-7.03` | 7.3 | フロントエンドのテスト基盤を作る（Vitest / msw） |
-| `v1-7.04` | 7.4 | カバレッジを測り、下がったら落ちるようにする |
-| `v1-7.05` | 7.5 | 本物のDBを相手にAPIを通しで確かめる（統合テスト / supertest） |
-| `v1-7.06` | 7.6 | ブラウザを動かして画面の流れを確かめる（Playwright） |
-| `v1-7.07` | 7.7 | 認可の結果が画面に正しく出ることを確かめる（IDOR） |
-| `v1-7.08` | 7.8 | 描き直す必要のない再描画を見つける |
-| `v1-7.09` | 7.9 | 負荷をかける土台を用意する（k6） |
-| `v1-7.10` | 7.10 | 並行更新で楽観ロックが効くことを測る（k6 / shared-iterations） |
+| [`v1-1.01`](https://github.com/extra-fe/webapp-textbook/commit/86afef0cc50b3cdd3547970c15677f132a3667b8) | 1.1 | 何を作るかと、なぜこの組み合わせかを決める（Vue / NestJS / PostgreSQL） |
+| [`v1-1.02`](https://github.com/extra-fe/webapp-textbook/commit/ce71ea2fb0b9c4f211aa989624218170c3f1592d) | 1.2 | 開発環境をコマンド1つで立ち上げる（Docker Compose） |
+| [`v1-1.03`](https://github.com/extra-fe/webapp-textbook/commit/9ac5a43a7bc215021b4717b0197c93d4cf3136bf) | 1.3 | 誰が立てても同じ認証サーバーになるようにする（Keycloak） |
+| [`v1-1.04`](https://github.com/extra-fe/webapp-textbook/commit/866c8c97ae80901d9668dc8c2e614322555a24c3) | 1.4 | 画面を足していけるフロントエンドの土台を作る（Vue） |
+| [`v1-1.05`](https://github.com/extra-fe/webapp-textbook/commit/3b1752c73e881e6bf408f02c3e5891c2b389861f) | 1.5 | APIを足していけるバックエンドの土台を作る（NestJS / Prisma） |
+| [`v1-1.06`](https://github.com/extra-fe/webapp-textbook/commit/d8e8e8013fc915a4938d388d2ab1178fa8d0c28d) | 1.6 | ログインを実装したうえで、開発用にスキップも可能にする（OIDC / PKCE） |
+| [`v1-1.07`](https://github.com/extra-fe/webapp-textbook/commit/88544e64d3541447b402aee4a4cb72a5120f28da) | 1.7 | APIサーバーが生きているかを外から確かめる（ヘルスチェック） |
+| [`v1-2.01`](https://github.com/extra-fe/webapp-textbook/commit/6657aaee8fe76652d66be3b5627f30299f728357) | 2.1 | テーブルを決めてマイグレーションで作る（Prisma マイグレーション） |
+| [`v1-2.02`](https://github.com/extra-fe/webapp-textbook/commit/6657aaee8fe76652d66be3b5627f30299f728357) | 2.2 | 主キーにUUIDを選び、v4とv7を使い分ける |
+| [`v1-2.03`](https://github.com/extra-fe/webapp-textbook/commit/abb8ec453afa603739d3e6cbfcb226d926e91ea1) | 2.3 | エンドポイントをSwaggerから叩けるようにする |
+| [`v1-2.04`](https://github.com/extra-fe/webapp-textbook/commit/abb8ec453afa603739d3e6cbfcb226d926e91ea1) | 2.4 | 物理削除か論理削除かを決める |
+| [`v1-2.05`](https://github.com/extra-fe/webapp-textbook/commit/57a8d9076da104f8b8c4d6ee234d5010e6bdaf0c) | 2.5 | フロントエンドからAPIを呼ぶ（axios / CORS） |
+| [`v1-2.06`](https://github.com/extra-fe/webapp-textbook/commit/606c7966afdebf87497a52118f878a79169d6102) | 2.6 | APIの側でロールごとに操作できる範囲を分ける（RBAC） |
+| [`v1-2.07`](https://github.com/extra-fe/webapp-textbook/commit/0e39e6cca08d6bd91f93546e7095c798c16e398d) | 2.7 | IdPを差し替えられるようにしておく |
+| [`v1-3.01`](https://github.com/extra-fe/webapp-textbook/commit/d3a387eb0034d732a7c5cfdc394f1ace82fee7dd) | 3.1 | 書き間違いを人ではなく道具に見つけさせる（静的解析：ESLint / Biome） |
+| [`v1-3.02`](https://github.com/extra-fe/webapp-textbook/commit/545807b46aba55a97b7acf64efb07f25ce53435d) | 3.2 | ボタンの二度押しで二重に登録させない（二重送信ガード） |
+| [`v1-3.03`](https://github.com/extra-fe/webapp-textbook/commit/545807b46aba55a97b7acf64efb07f25ce53435d) | 3.3 | 画面で同じデータを2か所に保持しない（computed） |
+| [`v1-3.04`](https://github.com/extra-fe/webapp-textbook/commit/545807b46aba55a97b7acf64efb07f25ce53435d) | 3.4 | 値を変えたのに画面が変わらないのを防ぐ（リアクティビティ） |
+| [`v1-3.05`](https://github.com/extra-fe/webapp-textbook/commit/96940c8df22eef3b82ef18b562603b485b650596) | 3.5 | アクセストークンの取り直しを1回にまとめる（single-flight） |
+| [`v1-3.06`](https://github.com/extra-fe/webapp-textbook/commit/cc42814f324db8af3e3d1c10217965566575886e) | 3.6 | 更新の衝突を検出し、最新を取り直す（楽観ロックの409） |
+| [`v1-3.07`](https://github.com/extra-fe/webapp-textbook/commit/910283df031f2cea95c7f1cabf94b9e950504f06) | 3.7 | 認証を待たずに取れるデータから表示する（ローディング設計） |
+| [`v1-3.08`](https://github.com/extra-fe/webapp-textbook/commit/e6cfb7438d0a3d749b6daba1b92f5c2b18d398e7) | 3.8 | 操作の確認を挟み、結果の置き場所を先に確保する（確認ダイアログ） |
+| [`v1-3.09`](https://github.com/extra-fe/webapp-textbook/commit/c7c289a4f70c2e992dbf55ea6b7851789ca41993) | 3.9 | 画面を分け、「戻る」で詰まらない遷移にする（Vue Router） |
+| [`v1-3.10`](https://github.com/extra-fe/webapp-textbook/commit/ae15485622d2af96a9bf565d844a5fd6744d1c5f) | 3.10 | 打ちかけの入力を失わせない（離脱ガード） |
+| [`v1-3.11`](https://github.com/extra-fe/webapp-textbook/commit/660626faab827cd2c1cf19eeaefeba79e416ca84) | 3.11 | デプロイせずにメンテナンス表示へ切り替える（メンテナンスモード） |
+| [`v1-3.12`](https://github.com/extra-fe/webapp-textbook/commit/4eacd295e8b99c1b91c8e7bab5a3c1bf9492a93b) | 3.12 | エラーを取りこぼして白い画面にしない（エラーバウンダリ） |
+| [`v1-3.13`](https://github.com/extra-fe/webapp-textbook/commit/4eacd295e8b99c1b91c8e7bab5a3c1bf9492a93b) | 3.13 | TanStack Query・VueUseを入れる段階かを見極める |
+| [`v1-4.01`](https://github.com/extra-fe/webapp-textbook/commit/799f1618d3cc9e2dc319ba370257d7952bbe45f0) | 4.1 | 1件のリクエストを最後まで追えるようにする（OpenTelemetry / トレースID） |
+| [`v1-4.02`](https://github.com/extra-fe/webapp-textbook/commit/cf3d7859f1c5040e289335440c195f899ea1af0c) | 4.2 | ログをJSONで出してリクエストIDで追えるようにする（構造化ログ） |
+| [`v1-4.03`](https://github.com/extra-fe/webapp-textbook/commit/abc0a20a7a91740a9dcc2be9bcb2e67698569feb) | 4.3 | 弾かれたリクエストも取りこぼさずログに残す（インターセプター） |
+| [`v1-4.04`](https://github.com/extra-fe/webapp-textbook/commit/c39971508d5d16a95cff5d9db82e44629e4515e7) | 4.4 | 同じ相手からの連打を一定回数で止める（レート制限） |
+| [`v1-4.05`](https://github.com/extra-fe/webapp-textbook/commit/e5ddbc20d17fc20db5ca70ee91688a17071d4b22) | 4.5 | リクエストヘッダを書き換えてもレート制限を回避させない（trust proxy） |
+| [`v1-4.06`](https://github.com/extra-fe/webapp-textbook/commit/efe1aabbb78fb74c36ce63c7ebf590d5af45fca8) | 4.6 | 停止時に処理中のリクエストを捨てない（グレースフルシャットダウン） |
+| [`v1-4.07`](https://github.com/extra-fe/webapp-textbook/commit/77fbc3d7a5962b7d284e382d8d1ec77496a80c54) | 4.7 | DB接続を使い回し、つながらないときはやり直す（コネクションプール） |
+| [`v1-4.08`](https://github.com/extra-fe/webapp-textbook/commit/0d275c6aebae0159dc90f1aebd8e583868aa1a72) | 4.8 | 応答しない外部APIを待ち続けない（タイムアウト） |
+| [`v1-4.09`](https://github.com/extra-fe/webapp-textbook/commit/70d20a89f45c28123a75e289675805b03fc29842) | 4.9 | 設定が足りないまま起動させない（環境変数の検証） |
+| [`v1-4.10`](https://github.com/extra-fe/webapp-textbook/commit/4ac0c91079e7e62474455f9eacb923600517d1c1) | 4.10 | 拾い損なった非同期エラーで黙って停止しない（unhandledRejection） |
+| [`v1-4.11`](https://github.com/extra-fe/webapp-textbook/commit/589eedbb05a949b6049ddc01e7e25663b5f813df) | 4.11 | リトライしても二重に処理されないようにする（冪等性） |
+| [`v1-4.12`](https://github.com/extra-fe/webapp-textbook/commit/1da98451fbde589314686a0cec588f48d86fc4f2) | 4.12 | どのAPIも同じ形でエラーを返す（例外フィルタ） |
+| [`v1-5.01`](https://github.com/extra-fe/webapp-textbook/commit/1da98451fbde589314686a0cec588f48d86fc4f2) | 5.1 | 1つ破られても止まらないように層を重ねる（多層防御） |
+| [`v1-5.02`](https://github.com/extra-fe/webapp-textbook/commit/4b549cdd1273e191a8b489c0bbcb3349890c00d3) | 5.2 | 安全な認可フローしか使えないことを確かめる（認可コードフロー / PKCE） |
+| [`v1-5.03`](https://github.com/extra-fe/webapp-textbook/commit/b935622ed1269eed4030db34750e5ce3d16bdd7f) | 5.3 | 鍵が入れ替わっても落ちないようにする（JWKS / 鍵ローテーション） |
+| [`v1-5.04`](https://github.com/extra-fe/webapp-textbook/commit/6056a3976aa35af70574906622867a08ff998de6) | 5.4 | 他人のIDを入れても見せない（IDOR） |
+| [`v1-5.05`](https://github.com/extra-fe/webapp-textbook/commit/8a9905ae67b49a9ed05313a2638979565444fc3d) | 5.5 | 同じ利用者のロール照会が重なってもDBは1回だけ引く（ロールキャッシュ） |
+| [`v1-5.06`](https://github.com/extra-fe/webapp-textbook/commit/724b70fd74cbfd137d0b8d0ce2936714cf9e39b8) | 5.6 | ブラウザ側の防御を効かせ、素性を隠す（Helmet / セキュリティヘッダ） |
+| [`v1-5.07`](https://github.com/extra-fe/webapp-textbook/commit/412395e3b16c67c68639acb20e978c832f6ef710) | 5.7 | ガードとロールの付け忘れが起きない形にする（フェイルクローズ） |
+| [`v1-6.01`](https://github.com/extra-fe/webapp-textbook/commit/412395e3b16c67c68639acb20e978c832f6ef710) | 6.1 | スキーマの変更を開発と本番で同じ形に残す（Prisma マイグレーション） |
+| [`v1-6.02`](https://github.com/extra-fe/webapp-textbook/commit/082123bde6c9a08e5b012d7a31c636f79cdab8b0) | 6.2 | 命名と型の規約を決め、機械で守らせる（スキーマ規約） |
+| [`v1-6.03`](https://github.com/extra-fe/webapp-textbook/commit/8a7f114931234760de3aed58787dc0f47e037010) | 6.3 | 発行SQLを見えるようにしてN+1に気付く |
+| [`v1-6.04`](https://github.com/extra-fe/webapp-textbook/commit/855ef0f271de6e775bc8f0b90910985391cfedf9) | 6.4 | 遅いクエリとデッドロックをログに残す |
+| [`v1-6.05`](https://github.com/extra-fe/webapp-textbook/commit/855ef0f271de6e775bc8f0b90910985391cfedf9) | 6.5 | 同時更新で後の更新が負けることを確かめる（楽観ロック） |
+| [`v1-6.06`](https://github.com/extra-fe/webapp-textbook/commit/95701a03bc9e01d71e8ed5c7436e404782e66808) | 6.6 | 日時をUTCで持ち、表示だけ現地時刻にする（タイムゾーン） |
+| [`v1-6.07`](https://github.com/extra-fe/webapp-textbook/commit/95701a03bc9e01d71e8ed5c7436e404782e66808) | 6.7 | ブラウザが見たものを持ち帰る（開発者ツール / HAR） |
+| [`v1-7.01`](https://github.com/extra-fe/webapp-textbook/commit/95701a03bc9e01d71e8ed5c7436e404782e66808) | 7.1 | どのテストで何を守るかを決める（テストピラミッド） |
+| [`v1-7.02`](https://github.com/extra-fe/webapp-textbook/commit/9d7ef625c35486410a25564915626b1c0a2ae7c1) | 7.2 | バックエンドのロジックをDBなしで確かめる（ユニットテスト / Jest） |
+| [`v1-7.03`](https://github.com/extra-fe/webapp-textbook/commit/f826f647ec722de5b4ddf12665336bebb9c6b034) | 7.3 | フロントエンドのテスト基盤を作る（Vitest / msw） |
+| [`v1-7.04`](https://github.com/extra-fe/webapp-textbook/commit/28ddff78e022a53101f3d1b47a6fddc83e536484) | 7.4 | カバレッジを測り、下がったら落ちるようにする |
+| [`v1-7.05`](https://github.com/extra-fe/webapp-textbook/commit/a4b62cbf2115ca61bf2b5d27afcf69a6179ceb9c) | 7.5 | 本物のDBを相手にAPIを通しで確かめる（統合テスト / supertest） |
+| [`v1-7.06`](https://github.com/extra-fe/webapp-textbook/commit/bb14dc0cff02ca0ad64d62ec2b08a44868ad13ad) | 7.6 | ブラウザを動かして画面の流れを確かめる（Playwright） |
+| [`v1-7.07`](https://github.com/extra-fe/webapp-textbook/commit/773177a7e60b8234d2190d85601a639fa6a0d7d3) | 7.7 | 認可の結果が画面に正しく出ることを確かめる（IDOR） |
+| [`v1-7.08`](https://github.com/extra-fe/webapp-textbook/commit/1e10fc5e0944f773d3260d9097345c33840631ea) | 7.8 | 描き直す必要のない再描画を見つける |
+| [`v1-7.09`](https://github.com/extra-fe/webapp-textbook/commit/35c3dcc04ee77a0475bca4847ab3922d1115ccf2) | 7.9 | 負荷をかける土台を用意する（k6） |
+| [`v1-7.10`](https://github.com/extra-fe/webapp-textbook/commit/273e92025a072e57b0cb690b1c3060ef15c7c8eb) | 7.10 | 並行更新で楽観ロックが効くことを測る（k6 / shared-iterations） |
 
 ## 正誤表
 
